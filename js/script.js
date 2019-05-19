@@ -79,34 +79,49 @@ $(function () {
 		});
 	};
 
-	$('#ajax-test').click(function () {
+	$('#start-update').click(function () {
+
+		$('#update-results').append('Παρακαλούμε περιμένετε όσο κατεβάζουμε την τελευταία έκδοση <span id="downloading" style="display: inline-block;"><img src="img/loader-new.gif" style="position: relative; top: 6px; margin-right: 20px;" /></span>');
 
 		var start_time = new Date().getTime();
 
-		var test1 = ajaxExecute('ajax-test1.php');
+		var getLatest = ajaxExecute('ajax-get-latest.php');
 
-		// test1.done(function (data) {
-		// 	console.log(data);
-		// 	var request_time = new Date().getTime() - start_time;
-		// 	// console.log(request_time);
-		// });
-
-		var test2 = test1.then(function (data) {
-			var request_time = new Date().getTime() - start_time;
-			console.log(data); // This is the data returned from test1 - If we ever want to use it
-			console.log(request_time); // This is the time for the FIRST test
-			start_time = new Date().getTime(); // Reset the timer just befor the second execution
-			return ajaxExecute('ajax-test2.php');
-		});
-
-		test2.done(function (data) {
-			console.log(data);
+		getLatest.done(function (data) {
 			var request_time = new Date().getTime() - start_time; // Second call execution time
-			console.log(request_time);
+			var info = '. ' + data + ' σε ' + (request_time / 1000).toFixed(1) + 's';
+			$('#downloading').hide();
+			$('#update-results').append(info);
 		});
 
+		var extract = getLatest.then(function (data) {
+			$('#update-results').append('<br><br>Παρακαλούμε περιμένετε όσο αποσυμπιέζονται τα απαραίτητα αρχεία <span id="extracting" style="display: inline-block;"><img src="img/loader-new.gif" style="position: relative; top: 6px; margin-right: 20px;" /></span>');
+			start_time = new Date().getTime(); // Reset the timer just befor the second execution
+			return ajaxExecute('ajax-extract-release.php');
+		});
 
-		// alert('test');
+		extract.done(function (data) {
+			var request_time = new Date().getTime() - start_time; // Second call execution time
+			var info = '. ' + data + ' σε ' + (request_time / 1000).toFixed(1) + 's';
+			$('#extracting').hide();
+			$('#update-results').append(info);
+		});
+
+		var copy = extract.then(function (data) {
+			$('#update-results').append('<br><br>Παρακαλούμε περιμένετε όσο αντιγράφονται τα απαραίτητα αρχεία <span id="copying" style="display: inline-block;"><img src="img/loader-new.gif" style="position: relative; top: 6px; margin-right: 20px;" /></span>');
+			start_time = new Date().getTime(); // Reset the timer just befor the second execution
+			return ajaxExecute('ajax-copy-release.php');
+		});
+
+		copy.done(function (data) {
+			var request_time = new Date().getTime() - start_time; // Second call execution time
+			var info = '. ' + data + ' σε ' + (request_time / 1000).toFixed(1) + 's';
+			$('#copying').hide();
+			$('#update-results').append(info);
+		});
+
 	});
+
+
 });
 

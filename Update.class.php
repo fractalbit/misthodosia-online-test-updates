@@ -19,6 +19,8 @@ class App {
     private $tags = array();
     private $commits = array();
 
+    private $changelog = ''; // If this is not empty, it also means there is a new version
+
     private $repo_raw_data = array();
 
     private $repo; // This will hold the github instance
@@ -48,55 +50,100 @@ class App {
         $this->repo = $github_app_repo;
     }
 
-
-    public function get_raw_data(){       
+    public function get_releases(){
+        // Stores all the releases and populates the changelog
+        
         $repo = $this->repo;
-        // I don't think we have to download the commits
-        // We will work with tags for version checking and releases if there is one for that tag (for better changelong)
-        // $this->repo_raw_data['commits'] = json_decode($repo->get('commits'), true); // Set second parameter to true to return an assosiative array instead of an object
-        $this->repo_raw_data['tags'] = json_decode($repo->get('tags'), true); 
-        $this->repo_raw_data['releases'] = json_decode($repo->get('releases'), true);
         
-        $Parsedown = new Parsedown();        
-        $md = '## ' . $this->repo_raw_data['releases'][0]['tag_name'] . "\n" . $this->repo_raw_data['releases'][0]['body'];
-        echo $Parsedown->text($md);
-        
-        dump($this->repo_raw_data['releases']);
-        dump($this->repo_raw_data['tags']);
-        // dump($this->repo_raw_data['commits']);
+        $releases = json_decode($repo->get('releases'), true);
 
-        $this->save_data_by_sha();
-        dump($this->commits);
-        // $this->get_release_by_sha('a4f9f749f92b99a8212d38670110a303f3701281');
-    }
+        foreach($releases as $data){
+            $Parsedown = new Parsedown();
+            $html = $Parsedown->text('### ' . $data['name'] . "\n" . $data['body']);
 
-    private function get_release_by_sha($commit_hash){
-        if(!empty($commit_hash)){ // Should also check for validity
-            $tag = array_search($commit_hash, $this->repo_raw_data['tags']);
-            if($tag) {
-                echo $tag;
+            $release = array(
+                'tag' => $data['tag_name'], 
+                'name' => $data['name'],
+                'created' => App::convert_date($data['created_at']), 
+                'published' => App::convert_date($data['published_at']),
+                'zip_url' =>  $data['zipball_url'],
+                'html' => $html,
+            );
+
+            if(version_compare($this->current_version, $release['tag']) < 0){
+                // Add to this versions info to the changeog
+                $this->changelog .= $html;
             }
-        }else{
-            echo 'Error: Hash not provided';
-        }
-    }
 
-    private function save_data_by_sha(){
-        // Store just the data we want indexed by sha hash
-        $releases = $this->repo_raw_data['releases'];
-        $tags = $this->repo_raw_data['tags'];
-        $commits = $this->repo_raw_data['commits'];
-
-        foreach($commits as $cdata){
-            $sha = $cdata['sha'];
-            $this->commits[$sha] = array('message' => $cdata['commit']['message'], 'date' => $cdata['commit']['committer']['date']);
-            echo App::convert_date($cdata['commit']['committer']['date']) . '<br />';
+            $this->releases[] = $release;        
         }
+
+        // echo $this->releases[0]['html'];
+        // echo $this->releases[1]['html'];
+
+        // dump($this->releases);
     }
 
     public static function convert_date($ISO_8601){
         $date = new DateTime($ISO_8601);
         return $date->format("d/m/Y H:i");
+    }
+
+    public function print_newer(){
+        if(!empty($this->changelog)){
+            echo '<h3>Υπάρχουν διαθέσιμες ενημερώσεις...</h3>';
+            echo '<input id="start-update" type="button" value="Αυτόματη ενημέρωση στην τελευταία έκδοση">';
+            echo '<div id="update-results"></div><hr>';
+            echo $this->changelog;
+        }else{
+            echo '<h3>Έχετε την τελευταία έκδοση της εφαρμογής.</h3>';
+        }
+    }
+
+    public function download_latest(){
+        // Download the target version as zip
+        $latest = $this->releases[0];        
+        $download = $this->repo->download_release($latest['zip_url']);
+        $this->releases[0]['zip_local'] = $this->folders['downloads'] . 'misthodosia-online-' . $latest['tag'] . '.zip';
+        // dump($release_filename);        
+        file_put_contents($this->releases[0]['zip_local'], $download);
+    }
+
+    public function extract_latest(){
+        // Unzip the file we just downloaded
+        $latest = $this->releases[0];   
+        $release_filename = $latest['zip_local'];
+
+        $zip = new ZipArchive;
+        $res = $zip->open($release_filename, ZipArchive::CHECKCONS);
+        if ($res === TRUE) {
+            $zip->extractTo($this->folders['releases'] . $latest['tag']);
+            $zip->close();
+            // echo 'Ολοκληρώθηκε';            
+        } else {
+            switch($res) {
+                case ZipArchive::ER_NOZIP:
+                    die('not a zip archive');
+                case ZipArchive::ER_INCONS :
+                    die('consistency check failed');
+                case ZipArchive::ER_CRC :
+                    die('checksum failed');
+                default:
+                    die('error ' . $res);
+            }            
+        }
+    }
+
+    public function copy_latest(){
+        // Get the directory which contents we want to copy
+        $latest = $this->releases[0];  
+        $directories = glob($this->folders['releases'] . $latest['tag'] . '/*' , GLOB_ONLYDIR);
+        $source_dir = $directories[0];
+         
+        // Aaaaaand copy the files to the app_dir folder ... and pray!         
+        // dump($source_dir);
+        // dump($this->app_dir);
+        xcopy($source_dir, $this->app_dir);
     }
 
     public function update(){

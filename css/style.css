@@ -385,3 +385,8 @@ ul.pws_tabs_controll {
 .special {
 	background: #e5ecf9 !important;
 }
+
+#update-results {
+	margin-top: 20px;
+	padding: 10px;
+}
