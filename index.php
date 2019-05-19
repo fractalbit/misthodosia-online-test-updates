@@ -23,7 +23,7 @@
 /* *********** ΤΕΛΟΣ ΓΕΝΙΚΗΣ ΠΕΡΙΓΡΑΦΗΣ *********** */
 
 
-include_once('./init.inc.php');
+require_once './init.inc.php';
 
 $salt = rand_str(5); 
 fSession::set('salt', $salt);
@@ -31,7 +31,6 @@ if(isset($_REQUEST['afm'])) fSession::set('afm', trim($_REQUEST['afm']));
 //fSession::close();
 
 print_header();
-
 
 clean_up(); // Delete all .pdf files older than CLEAN_UP_AFTER (config.inc.php)
 

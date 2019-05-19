@@ -71,5 +71,42 @@ $(function () {
 		event.preventDefault();
 		$('.xml-errors').toggle(300);
 	});
+
+	var ajaxExecute = function (url) {
+		return $.ajax({
+			url: url,
+			dataType: "html",
+		});
+	};
+
+	$('#ajax-test').click(function () {
+
+		var start_time = new Date().getTime();
+
+		var test1 = ajaxExecute('ajax-test1.php');
+
+		// test1.done(function (data) {
+		// 	console.log(data);
+		// 	var request_time = new Date().getTime() - start_time;
+		// 	// console.log(request_time);
+		// });
+
+		var test2 = test1.then(function (data) {
+			var request_time = new Date().getTime() - start_time;
+			console.log(data); // This is the data returned from test1 - If we ever want to use it
+			console.log(request_time); // This is the time for the FIRST test
+			start_time = new Date().getTime(); // Reset the timer just befor the second execution
+			return ajaxExecute('ajax-test2.php');
+		});
+
+		test2.done(function (data) {
+			console.log(data);
+			var request_time = new Date().getTime() - start_time; // Second call execution time
+			console.log(request_time);
+		});
+
+
+		// alert('test');
+	});
 });
 

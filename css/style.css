@@ -264,12 +264,12 @@ div.error {
 
 .left{
 	float: left;
-	width: 600px;
+	width: 620px;
 }
 
 .right{
 	float: right;
-	width: 300px;
+	width: 290px;
 	text-align: right;
 }
 
@@ -288,7 +288,7 @@ ul#admin-menu li a {
 	display: inline-block;
 	text-decoration: none;
 	padding: 4px 8px;
-	margin: 0 5px;
+	margin: 0 4px;
 	margin-top: 5px;
 	border-bottom: 5px solid #e2e2e2;
 }

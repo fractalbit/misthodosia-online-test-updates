@@ -1,10 +1,8 @@
 <?php
-require_once 'init.inc.php';
-require_once 'Parsedown.php';
-
 class App {
 
-    private $current_version = '3.0.0'; 
+    private static $version  = 'v3.0.0'; // static variables can only be accessed from static methods
+    private $current_version = 'v3.0.0'; 
     // This should be changed every time we push to github
     // while also creating the actual correspoding git tag
     // And don't foget to push tags to github
@@ -115,20 +113,29 @@ class App {
         // So there is always a direct assosciation between the current app version and what we get from github
 
         // Download the target version as zip
-        $download = $this->repo->get_release($zipball);
+        $download = $this->repo->download_release($zipball);
         $release_filename = $this->folders['downloads'] . 'misthodosia-online-' . $latest['tag_name'] . '.zip';
         dump($release_filename);        
         file_put_contents($release_filename, $download);
 
         // Unzip the file we just downloaded
         $zip = new ZipArchive;
-        $res = $zip->open($release_filename);
+        $res = $zip->open($release_filename, ZipArchive::CHECKCONS);
         if ($res === TRUE) {
             $zip->extractTo($this->folders['releases'] . $latest['tag_name']);
             $zip->close();
             echo 'Το αρχείο αποσυμπιέστηκε με επιτυχία';            
         } else {
-            echo 'Συνέβη ένα σφάλμα κατά την αποσυμπίεση του αρχείου';   
+            switch($res) {
+                case ZipArchive::ER_NOZIP:
+                    die('not a zip archive');
+                case ZipArchive::ER_INCONS :
+                    die('consistency check failed');
+                case ZipArchive::ER_CRC :
+                    die('checksum failed');
+                default:
+                    die('error ' . $res);
+            }            
         }
 
         // Get the directory which contents we want to copy
@@ -141,19 +148,19 @@ class App {
         dump($this->app_dir);
         xcopy($source_dir, $this->app_dir);
 
-        // Delete the .gitignore files from the simulate directory
-        // if($this->simulate){
-        //     $for_del = glob($this->simulate_dir . '**/*/.gitignore');
-        //     dump($for_del);
-        //     // foreach($for_del as $file)
-        // }
-               
+        // Maybe i should add some logging here
+        // So the admin knows when they updated the app (store date and from_version, to_version)
+
         // Maybe also change directory permissions after copying
     }
 
     private function cleanup(){
         // Delete contents of the updates folder
         // Maybe keep the last version though?
+    }
+
+    public static function get_version(){
+        return self::$version;
     }
 }
 
@@ -184,26 +191,7 @@ class Github {
         }
     }
 
-    public function unzip(){
-        // Just try the unzip for now with hardcoded file and path
-        $zip = new ZipArchive;
-        $res = $zip->open('./temp-experiments/misthodosia-online-master.zip');
-        if ($res === TRUE) {
-            $zip->extractTo('./temp-experiments/new_repo/');
-            $zip->close();
-            echo 'woot!';
-
-            // Now copy the contents of misthodosia-online-master
-            $orig = './temp-experiments/new_repo/misthodosia-online-master/';
-            $target = './temp-experiments/new_repo/';
-
-           xcopy($orig, $target);
-        } else {
-            echo 'doh!';   
-        }
-    }
-
-    public function get_release($fetch_url){
+    public function download_release($fetch_url){
         // Download the specified tag version from github
 
         $ch = curl_init();
@@ -225,95 +213,3 @@ class Github {
     }
 }
 
-/**
- * Copy a file, or recursively copy a folder and its contents
- * @author      Aidan Lister <aidan@php.net>
- * @version     1.0.1
- * @link        http://aidanlister.com/2004/04/recursively-copying-directories-in-php/
- * @param       string   $source    Source path
- * @param       string   $dest      Destination path
- * @param       int      $permissions New folder creation permissions
- * @return      bool     Returns true on success, false on failure
- */
-function xcopy($source, $dest, $permissions = 0755)
-{
-    // Check for symlinks
-    if (is_link($source)) {
-        return symlink(readlink($source), $dest);
-    }
-
-    // Simple copy for a file
-    if (is_file($source)) {
-        return copy($source, $dest);
-    }
-
-    // Make destination directory
-    if (!is_dir($dest)) {
-        mkdir($dest, $permissions);
-    }
-
-    // Loop through the folder
-    $dir = dir($source);
-    while (false !== $entry = $dir->read()) {
-        // Skip pointers
-        if ($entry == '.' || $entry == '..') {
-            continue;
-        }
-
-        // Deep copy directories
-        xcopy("$source/$entry", "$dest/$entry", $permissions);
-    }
-
-    // Clean up
-    $dir->close();
-    return true;
-}
-?>
-
-<!DOCTYPE html>
-<html lang="el">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
-
-<?php
-
-$repo = new Github();
-$mo = new App($repo);
-$mo->update();
-// $mo->get_raw_data();
-
-// $repo->get_release('https://api.github.com/repos/fractalbit/misthodosia-online/zipball/v2.1.1');
-// $repo->unzip();
-
-
-
-// Just a quick test about versioning and version comparison
-// $app_versions = array('v2.2.0', 'v2.2.1', 'v2.3', 'v2.3.1', 'v2.3.1', 'v2.3.0.9');
-// $prev = '';
-// foreach($app_versions as $key => $ver){
-//     if(check_newer($prev, $ver)){
-//         echo $prev . ' VS ' . $ver . ' : There is a new version, please upgrade<br>';
-//     }else{
-//         echo $prev . ' VS ' . $ver . ' : Your version is up to date<br>';
-//     }
-//     $prev = $ver;
-// }
-
-// function check_newer($current_version, $server_version){
-//     if(version_compare($current_version, $server_version) < 0){
-//         return true;
-//     }else{
-//         return false;
-//     }
-// }
-
-?>
-
-    
-</body>
-</html>

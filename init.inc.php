@@ -25,13 +25,20 @@ error_reporting(E_ALL); ini_set('display_errors', '1');
 
 if(!file_exists('config.inc.php')) die('To arxeio config.inc.php de vrethike. Parakaloume diavaste <a href="https://github.com/fractalbit/misthodosia-online/blob/master/readme.md">tin tekmiriosi</a>');
 
-include('./functions.inc.php');
-include('./config.inc.php');
-include('./efpp.class.php');
+require_once './functions.inc.php';
+
+// Here we load everything we need for the automatic updates to work
+require_once './Update.class.php';
+require_once './Parsedown.php';
+// End of automatic updates includes
+
+require_once './config.inc.php';
+require_once './efpp.class.php';
 
 
-include('./ranks.php');
-include('./eapCodes.php');
+
+require_once './ranks.php';
+require_once './eapCodes.php';
 
 
 if(file_exists('passwords.php') && !file_exists(APP_DIR . '/passwords.php')){

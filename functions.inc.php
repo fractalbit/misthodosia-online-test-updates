@@ -65,6 +65,7 @@ function get_admin_menu(){
                     array('name' => 'Διαχείριση XML', 'url' => 'manage_xml.php'),
                     array('name' => 'Ρυθμίσεις', 'url' => 'settings.php'),
                     array('name' => 'Αρχείο καταγραφής', 'url' => 'view_log.php'),
+                    array('name' => 'Ενημερώσεις', 'url' => 'update.php'),
                     //array('name' => 'Τεκμηρίωση', 'url' => 'https://github.com/fractalbit/misthodosia-online/blob/master/readme.md', 'target' => '_blank'),
                 );
 
@@ -110,7 +111,7 @@ function print_header(){
 		<title>Μισθοδοσία online - <?php echo ORG_TITLE; ?></title>
 
 		<link rel="stylesheet" href="css/reset.css">
-		<link rel="stylesheet" href="css/style.css?ver=2.1.0">
+		<link rel="stylesheet" href="css/style.css?ver=<?php echo App::get_version(); ?>">
       
         <?php 
             if( admin_configured() && $admin->check_logged_in() ){ 
@@ -134,7 +135,7 @@ function print_header(){
            }
         ?>
 
-        <script src="js/script.js?ver=2.1.0"></script>
+        <script src="js/script.js?ver=<?php echo App::get_version(); ?>"></script>
 	</head>
 	<body>
 	<div class="container">
@@ -156,10 +157,13 @@ function print_header(){
 }
 
 function print_footer(){
+    // #todo Να προσθέσω την έκδοση της εφαρμογής δίπλα στο όνομα
+    $version = App::get_version();
+
 	?>
     	<br />
     	<hr />
-    	<div class="subtle">Λογισμικό ανοικτού κώδικα "<a href="http://dide.arg.sch.gr/grmixan/misthodosia-online-app/" target="_blank">Μισθοδοσία online</a>"</span>
+    	<div class="subtle">Λογισμικό ανοικτού κώδικα "<a href="http://dide.arg.sch.gr/grmixan/misthodosia-online-app/" target="_blank">Μισθοδοσία online</a>" - <?php echo $version ?></span>
     	</div>
         <?php
             if(file_exists(APP_DIR . '/google_analytics.code')){
@@ -401,4 +405,48 @@ function display_xml_error($error)
     }
 
     return "$return</div>";
+}
+
+/**
+ * Copy a file, or recursively copy a folder and its contents
+ * @author      Aidan Lister <aidan@php.net>
+ * @version     1.0.1
+ * @link        http://aidanlister.com/2004/04/recursively-copying-directories-in-php/
+ * @param       string   $source    Source path
+ * @param       string   $dest      Destination path
+ * @param       int      $permissions New folder creation permissions
+ * @return      bool     Returns true on success, false on failure
+ */
+function xcopy($source, $dest, $permissions = 0755)
+{
+    // Check for symlinks
+    if (is_link($source)) {
+        return symlink(readlink($source), $dest);
+    }
+
+    // Simple copy for a file
+    if (is_file($source)) {
+        return copy($source, $dest);
+    }
+
+    // Make destination directory
+    if (!is_dir($dest)) {
+        mkdir($dest, $permissions);
+    }
+
+    // Loop through the folder
+    $dir = dir($source);
+    while (false !== $entry = $dir->read()) {
+        // Skip pointers
+        if ($entry == '.' || $entry == '..') {
+            continue;
+        }
+
+        // Deep copy directories
+        xcopy("$source/$entry", "$dest/$entry", $permissions);
+    }
+
+    // Clean up
+    $dir->close();
+    return true;
 }
