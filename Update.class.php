@@ -112,38 +112,50 @@ class App {
     public function extract_latest(){
         // Unzip the file we just downloaded
         $latest = $this->releases[0];   
-        $release_filename = $latest['zip_local'];
+        if(array_key_exists('zip_local', $latest)){
 
-        $zip = new ZipArchive;
-        $res = $zip->open($release_filename, ZipArchive::CHECKCONS);
-        if ($res === TRUE) {
-            $zip->extractTo($this->folders['releases'] . $latest['tag']);
-            $zip->close();
-            // echo 'Ολοκληρώθηκε';            
-        } else {
-            switch($res) {
-                case ZipArchive::ER_NOZIP:
-                    die('not a zip archive');
-                case ZipArchive::ER_INCONS :
-                    die('consistency check failed');
-                case ZipArchive::ER_CRC :
-                    die('checksum failed');
-                default:
-                    die('error ' . $res);
-            }            
+            $release_filename = $latest['zip_local'];
+
+            if(file_exists($release_filename)){
+                $zip = new ZipArchive;
+                $res = $zip->open($release_filename, ZipArchive::CHECKCONS);
+                if ($res === TRUE) {
+                    $zip->extractTo($this->folders['releases'] . $latest['tag']);
+                    $zip->close();
+                    // echo 'Ολοκληρώθηκε';            
+                } else {
+                    switch($res) {
+                        case ZipArchive::ER_NOZIP:
+                            die('not a zip archive');
+                        case ZipArchive::ER_INCONS :
+                            die('consistency check failed');
+                        case ZipArchive::ER_CRC :
+                            die('checksum failed');
+                        default:
+                            die('error ' . $res);
+                    }            
+                }
+            }else{
+                header("HTTP/1.1 404 Not Found");
+                exit("Το αρχείο δεν βρέθηκε");                
+            }
+        }else{
+            header("HTTP/1.1 404 Not Found");
+            exit("Αποτυχία εύρεσης του αρχείου");
         }
     }
 
     public function copy_latest(){
         // Get the directory which contents we want to copy
         $latest = $this->releases[0];  
-        $directories = glob($this->folders['releases'] . $latest['tag'] . '/*' , GLOB_ONLYDIR);
-        $source_dir = $directories[0];
-         
-        // Aaaaaand copy the files to the app_dir folder ... and pray!         
-        // dump($source_dir);
-        // dump($this->app_dir);
-        xcopy($source_dir, $this->app_dir);
+        if(is_dir($this->folders['releases'] . $latest['tag'])){
+            $directories = glob($this->folders['releases'] . $latest['tag'] . '/*' , GLOB_ONLYDIR);
+            $source_dir = $directories[0];        
+            // Aaaaaand copy the files to the app_dir folder ... and pray!                 
+            xcopy($source_dir, $this->app_dir);
+        }else{
+            echo 'folder not found';
+        }
     }
 
     public function update(){
@@ -165,24 +177,28 @@ class App {
         dump($release_filename);        
         file_put_contents($release_filename, $download);
 
-        // Unzip the file we just downloaded
-        $zip = new ZipArchive;
-        $res = $zip->open($release_filename, ZipArchive::CHECKCONS);
-        if ($res === TRUE) {
-            $zip->extractTo($this->folders['releases'] . $latest['tag_name']);
-            $zip->close();
-            echo 'Το αρχείο αποσυμπιέστηκε με επιτυχία';            
-        } else {
-            switch($res) {
-                case ZipArchive::ER_NOZIP:
-                    die('not a zip archive');
-                case ZipArchive::ER_INCONS :
-                    die('consistency check failed');
-                case ZipArchive::ER_CRC :
-                    die('checksum failed');
-                default:
-                    die('error ' . $res);
-            }            
+        if(file_exists($release_filename)){
+            // Unzip the file we just downloaded
+            $zip = new ZipArchive;        
+            $res = $zip->open($release_filename, ZipArchive::CHECKCONS);
+            if ($res === TRUE) {
+                $zip->extractTo($this->folders['releases'] . $latest['tag_name']);
+                $zip->close();
+                echo 'Το αρχείο αποσυμπιέστηκε με επιτυχία';            
+            } else {
+                switch($res) {
+                    case ZipArchive::ER_NOZIP:
+                        die('not a zip archive');
+                    case ZipArchive::ER_INCONS :
+                        die('consistency check failed');
+                    case ZipArchive::ER_CRC :
+                        die('checksum failed');
+                    default:
+                        die('error ' . $res);
+                }            
+            }
+        }else{
+            echo 'file_not found!';
         }
 
         // Get the directory which contents we want to copy

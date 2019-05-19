@@ -75,13 +75,20 @@ $(function () {
 	var ajaxExecute = function (url) {
 		return $.ajax({
 			url: url,
-			dataType: "html",
+			// dataType: "html",
 		});
+	};
+
+	var beautifyError = function (jqXHR) {
+		var errorText = '. <div class="error"><strong>Συνέβη ένα σφάλμα</strong>, ' + jqXHR.status + ' - ' + jqXHR.statusText + ': ' + jqXHR.responseText + '</div>';
+		return errorText;
 	};
 
 	$('#start-update').click(function () {
 
-		$('#update-results').append('Παρακαλούμε περιμένετε όσο κατεβάζουμε την τελευταία έκδοση <span id="downloading" style="display: inline-block;"><img src="img/loader-new.gif" style="position: relative; top: 6px; margin-right: 20px;" /></span>');
+		var alreadyFailed = false;
+
+		$('#update-results').append('Παρακαλούμε περιμένετε όσο κατεβάζουμε την τελευταία έκδοση<span id="downloading" class="ajax-loader" style="display: inline-block;"><img src="img/loader-new.gif" style="position: relative; top: 6px; margin-right: 20px;" /></span>');
 
 		var start_time = new Date().getTime();
 
@@ -89,35 +96,59 @@ $(function () {
 
 		getLatest.done(function (data) {
 			var request_time = new Date().getTime() - start_time; // Second call execution time
-			var info = '. ' + data + ' σε ' + (request_time / 1000).toFixed(1) + 's';
+			var info = '. <strong>' + data + '</strong> σε ' + (request_time / 1000).toFixed(1) + 's';
 			$('#downloading').hide();
 			$('#update-results').append(info);
 		});
 
+		getLatest.fail(function (jqXHR, textStatus, errorThrown) {
+			var errorInfo = beautifyError(jqXHR);
+			$('#downloading').hide();
+			$('#update-results').append(errorInfo);
+			alreadyFailed = true;
+		});
+
 		var extract = getLatest.then(function (data) {
-			$('#update-results').append('<br><br>Παρακαλούμε περιμένετε όσο αποσυμπιέζονται τα απαραίτητα αρχεία <span id="extracting" style="display: inline-block;"><img src="img/loader-new.gif" style="position: relative; top: 6px; margin-right: 20px;" /></span>');
+			$('#update-results').append('<br><br>Παρακαλούμε περιμένετε όσο αποσυμπιέζονται τα απαραίτητα αρχεία<span id="extracting" class="ajax-loader" style="display: inline-block;"><img src="img/loader-new.gif" style="position: relative; top: 6px; margin-right: 20px;" /></span>');
 			start_time = new Date().getTime(); // Reset the timer just befor the second execution
 			return ajaxExecute('ajax-extract-release.php');
 		});
 
 		extract.done(function (data) {
 			var request_time = new Date().getTime() - start_time; // Second call execution time
-			var info = '. ' + data + ' σε ' + (request_time / 1000).toFixed(1) + 's';
+			var info = '. <strong>' + data + '</strong> σε ' + (request_time / 1000).toFixed(1) + 's';
 			$('#extracting').hide();
 			$('#update-results').append(info);
 		});
 
+		extract.fail(function (jqXHR, textStatus, errorThrown) {
+			if (!alreadyFailed) {
+				var errorInfo = beautifyError(jqXHR);
+				$('#extracting').hide();
+				$('#update-results').append(errorInfo);
+			}
+			alreadyFailed = true;
+		});
+
 		var copy = extract.then(function (data) {
-			$('#update-results').append('<br><br>Παρακαλούμε περιμένετε όσο αντιγράφονται τα απαραίτητα αρχεία <span id="copying" style="display: inline-block;"><img src="img/loader-new.gif" style="position: relative; top: 6px; margin-right: 20px;" /></span>');
+			$('#update-results').append('<br><br>Παρακαλούμε περιμένετε όσο αντιγράφονται τα απαραίτητα αρχεία<span id="copying" class="ajax-loader" style="display: inline-block;"><img src="img/loader-new.gif" style="position: relative; top: 6px; margin-right: 20px;" /></span>');
 			start_time = new Date().getTime(); // Reset the timer just befor the second execution
 			return ajaxExecute('ajax-copy-release.php');
 		});
 
 		copy.done(function (data) {
 			var request_time = new Date().getTime() - start_time; // Second call execution time
-			var info = '. ' + data + ' σε ' + (request_time / 1000).toFixed(1) + 's';
+			var info = '. <strong>' + data + '</strong> σε ' + (request_time / 1000).toFixed(1) + 's';
 			$('#copying').hide();
 			$('#update-results').append(info);
+		});
+
+		copy.fail(function (jqXHR, textStatus, errorThrown) {
+			if (!alreadyFailed) {
+				var errorInfo = beautifyError(jqXHR);
+				$('#copying').hide();
+				$('#update-results').append(errorInfo);
+			}
 		});
 
 	});

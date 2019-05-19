@@ -390,3 +390,7 @@ ul.pws_tabs_controll {
 	margin-top: 20px;
 	padding: 10px;
 }
+
+.ajax-loader {
+	margin-left: 12px;
+}
