@@ -13,7 +13,7 @@ if(admin_configured()){
         // $mo->update();
         $mo->get_releases();
         $mo->print_newer();
-        fSession::set('app', $mo); // Store the App object so that ajax requests can access it
+        fSession::set('app', ''); // Store the App object so that ajax requests can access it
         // This does not work well when sqitching branches
         // I should see how i can delete session data from xampp
         // Or consider other ways to save data to the server
