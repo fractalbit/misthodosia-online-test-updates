@@ -25,7 +25,7 @@ class App {
 
     private $repo; // This will hold the github instance
     
-    public function __construct($github_app_repo){
+    public function __construct(){
         $this->app_dir = trailingslashit(dirname(__FILE__));
         
         if(is_dir('.git')){ // This means we are in a dev enviroment. We should be carefull not to overwrite our working directory!
@@ -43,16 +43,39 @@ class App {
 
         // I should create the folders if they do not exist
 
-        dump($this->app_dir);
-        dump($this->current_version);
-        dump($this->folders);
+        // dump($this->app_dir);
+        // dump($this->current_version);
+        // dump($this->folders);
 
-        $this->repo = $github_app_repo;
+        $this->repo = new Github();
+
+        $cached_releases = fSession::get('releases');
+        is_array($cached_releases) ? $this->releases = $cached_releases : $this->get_releases();
+       
+        $cached_changelog = fSession::get('changelog');
+        !empty($cached_changelog) ? $this->changelog = $cached_changelog : $this->get_releases();
+        
+    }
+
+    public function display_paths(){
+        if(is_dir('.git')){
+            dump($this->app_dir);
+            dump($this->current_version);
+            dump($this->folders);
+        }
     }
 
     public function get_releases(){
         // Stores all the releases and populates the changelog
         
+        $temp_info = 'get_releases run';    dump($temp_info);
+
+        // First clear possible cached values. This is needed if the get_releases is called outside
+        //  of the constructor so it force updates the values stored when creating the object
+        
+        $this->releases = array(); 
+        $this->changelog = '';
+
         $repo = $this->repo;
         
         $releases = json_decode($repo->get('releases'), true);
@@ -77,6 +100,9 @@ class App {
 
             $this->releases[] = $release;        
         }
+
+        fsession::set('releases', $this->releases);        
+        fsession::set('changelog', $this->changelog);        
 
         // echo $this->releases[0]['html'];
         // echo $this->releases[1]['html'];
@@ -107,6 +133,7 @@ class App {
         $this->releases[0]['zip_local'] = $this->folders['downloads'] . 'misthodosia-online-' . $latest['tag'] . '.zip';
         // dump($release_filename);        
         file_put_contents($this->releases[0]['zip_local'], $download);
+        fsession::set('releases', $this->releases);
     }
 
     public function extract_latest(){
