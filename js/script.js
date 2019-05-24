@@ -149,6 +149,28 @@ $(function () {
 				$('#copying').hide();
 				$('#update-results').append(errorInfo);
 			}
+			alreadyFailed = true;
+		});
+
+		var cleanup = copy.then(function (data) {
+			$('#update-results').append('<br><br>Εκκαθάριση προσωρινών αρχείων<span id="cleanup" class="ajax-loader" style="display: inline-block;"><img src="img/loader-new.gif" style="position: relative; top: 6px; margin-right: 20px;" /></span>');
+			start_time = new Date().getTime(); // Reset the timer just befor the second execution
+			return ajaxExecute('ajax-update-cleanup.php');
+		});
+
+		cleanup.done(function (data) {
+			var request_time = new Date().getTime() - start_time; // Second call execution time
+			var info = '. <strong>' + data + '</strong> σε ' + (request_time / 1000).toFixed(1) + 's';
+			$('#cleanup').hide();
+			$('#update-results').append(info);
+		});
+
+		cleanup.fail(function (jqXHR, textStatus, errorThrown) {
+			if (!alreadyFailed) {
+				var errorInfo = beautifyError(jqXHR);
+				$('#cleanup').hide();
+				$('#update-results').append(errorInfo);
+			}
 		});
 
 	});

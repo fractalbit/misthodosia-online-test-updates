@@ -9,7 +9,7 @@ include_once('./init.inc.php');
 if (admin_configured()) {
     if ($admin->check_logged_in()) {
         $app = new App();
-        $app->copy_latest();
+        $app->cleanup_and_log();
         echo 'Ολοκληρώθηκε';
     } else {
         header('HTTP/1.1 403 Forbidden');

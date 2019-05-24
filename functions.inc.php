@@ -22,57 +22,63 @@
 // Συχνά χρησιμοποιούμενες συναρτήσεις (fuf? :P)
 /* *********** ΤΕΛΟΣ ΓΕΝΙΚΗΣ ΠΕΡΙΓΡΑΦΗΣ *********** */
 
-function save_file($filename, $data){
- 	$data = serialize($data); 	
- 	$file = fopen($filename, 'w');
- 	$data = '<?php $person = \''. addslashes($data) . '\';';
- 	fwrite($file, $data);
- 	fclose($file);
- 	unset($data);
- }
-
- function load_file($file){
- 	//$contents = file_get_contents($file);
- 	include($file);
- 	$data = unserialize(stripslashes($person));
-
- 	return $data;
- }
-
-function rand_str($length = 10) {    
-    $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
-    $string = '';    
-    for ($p = 0; $p < $length; $p++) {
-        $string .= $characters[mt_rand(0, strlen($characters)-1)];
-    }
-    
-    return $string;    
+function save_file($filename, $data)
+{
+    $data = serialize($data);
+    $file = fopen($filename, 'w');
+    $data = '<?php $person = \'' . addslashes($data) . '\';';
+    fwrite($file, $data);
+    fclose($file);
+    unset($data);
 }
 
-function savelog($message, $file = 'admin_log.txt'){
-    $file = APP_DIR . '/' . $file; 
+function load_file($file)
+{
+    //$contents = file_get_contents($file);
+    include($file);
+    $data = unserialize(stripslashes($person));
+
+    return $data;
+}
+
+function rand_str($length = 10)
+{
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
+    $string = '';
+    for ($p = 0; $p < $length; $p++) {
+        $string .= $characters[mt_rand(0, strlen($characters) - 1)];
+    }
+
+    return $string;
+}
+
+function savelog($message, $file = 'admin_log.txt')
+{
+    $file = APP_DIR . '/' . $file;
     $log = fopen($file, 'a+');
 
-    $message = $message . "\r\n" ;
+    $message = $message . "\r\n";
     fwrite($log, $message);
     fclose($log);
 }
 
-function get_admin_menu(){
+function get_admin_menu()
+{
     $menu = array(
-                    array('name' => 'Αρχική', 'url' => 'index.php'),
-                    array('name' => 'Μισθοδοτούμενοι', 'url' => 'list_users.php'),
-                    array('name' => 'Διαχείριση XML', 'url' => 'manage_xml.php'),
-                    array('name' => 'Ρυθμίσεις', 'url' => 'settings.php'),
-                    array('name' => 'Αρχείο καταγραφής', 'url' => 'view_log.php'),
-                    array('name' => 'Ενημερώσεις', 'url' => 'update.php'),
-                    //array('name' => 'Τεκμηρίωση', 'url' => 'https://github.com/fractalbit/misthodosia-online/blob/master/readme.md', 'target' => '_blank'),
-                );
+        array('name' => 'Αρχική', 'url' => 'index.php'),
+        array('name' => 'Μισθοδοτούμενοι', 'url' => 'list_users.php'),
+        array('name' => 'Διαχείριση XML', 'url' => 'manage_xml.php'),
+        array('name' => 'Ρυθμίσεις', 'url' => 'settings.php'),
+        array('name' => 'Αρχείο καταγραφής', 'url' => 'view_log.php'),
+        array('name' => 'Ενημερώσεις', 'url' => 'update.php'),
+        //array('name' => 'Τεκμηρίωση', 'url' => 'https://github.com/fractalbit/misthodosia-online/blob/master/readme.md', 'target' => '_blank'),
+    );
 
     return $menu;
 }
 
-function print_admin_menu(){
+function print_admin_menu()
+{
     global $admin;
 
     $menu = get_admin_menu();
@@ -83,101 +89,108 @@ function print_admin_menu(){
         <div class="left">
             <ul id="admin-menu" class="clearfix">
                 <?php
-                    foreach($menu as $item){
-                        $class = '';
-                        if($item['url'] == $current_script) $class = 'class="current"';
-                        ?>
-                        <li <?php echo $class; ?>><a href="<?php echo $item['url']; ?>" <?php if(isset($item['target'])) echo 'target="_blank"'; ?>><?php echo $item['name']; ?></a></li>
-                        <?php
-                    }
-                ?>
+                foreach ($menu as $item) {
+                    $class = '';
+                    if ($item['url'] == $current_script) $class = 'class="current"';
+                    ?>
+                    <li <?php echo $class; ?>><a href="<?php echo $item['url']; ?>" <?php if (isset($item['target'])) echo 'target="_blank"'; ?>><?php echo $item['name']; ?></a></li>
+                <?php
+            }
+            ?>
             </ul>
         </div>
         <div class="right">
             <?php echo $admin->message; ?>
         </div>
     </div>
-    <?php
+<?php
 }
 
 
-function print_header(){
+function print_header()
+{
     global $admin;
-	?>
-	<!doctype html>
-	<html lang="el">
-	<head>
-		<meta charset="utf-8">
-		<title>Μισθοδοσία online - <?php echo ORG_TITLE; ?></title>
+    ?>
+    <!doctype html>
+    <html lang="el">
 
-		<link rel="stylesheet" href="css/reset.css">
-		<link rel="stylesheet" href="css/style.css?ver=<?php echo App::get_version(); ?>">
-      
-        <?php 
-            if( admin_configured() && $admin->check_logged_in() ){ 
-        ?>         
-          <!-- Include pws tabs style. -->
-          <link type="text/css" rel="stylesheet" href="js/pwstabs/assets/jquery.pwstabs-1.2.1.css">
+    <head>
+        <meta charset="utf-8">
+        <title>Μισθοδοσία online - <?php echo ORG_TITLE; ?></title>
+
+        <link rel="stylesheet" href="css/reset.css">
+        <link rel="stylesheet" href="css/style.css?ver=<?php echo App::get_version(); ?>">
+
         <?php
-            }
-        ?>       
+        if (admin_configured() && $admin->check_logged_in()) {
+            ?>
+            <!-- Include pws tabs style. -->
+            <link type="text/css" rel="stylesheet" href="js/pwstabs/assets/jquery.pwstabs-1.2.1.css">
+        <?php
+    }
+    ?>
 
 
         <!-- load google hosted jquery with local fallback -->
         <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
-        <script>window.jQuery || document.write('<script src="js/jquery-1.11.2.min.js"><\/script>')</script>
+        <script>
+            window.jQuery || document.write('<script src="js/jquery-1.11.2.min.js"><\/script>')
+        </script>
 
         <script src="js/jquery.slideto.v1.2.custom.js?ver=2.0.0"></script>
-        
-        <?php if( admin_configured() && $admin->check_logged_in() ){ ?>
-              <script src="js/jquery.fastLiveFilter.js"></script>
+
+        <?php if (admin_configured() && $admin->check_logged_in()) { ?>
+            <script src="js/jquery.fastLiveFilter.js"></script>
         <?php
-           }
-        ?>
+    }
+    ?>
 
         <script src="js/script.js?ver=<?php echo App::get_version(); ?>"></script>
-	</head>
-	<body>
-	<div class="container">
+    </head>
 
-    <?php
-        $txt = '';
-        if(!$admin->check_logged_in()){
-            $txt = '<a href="list_users.php">Διαχείριση</a>';
-        }
-		echo '<div id="header" class="clearfix">
-                <div class="left"><h2><a href="'.ORG_URL.'" class="button">'.ORG_TITLE.'</a> &raquo; <a href="index.php" class="button">Μισθοδοσία online</a></h2></div>
-                <div class="right subtle">'.$txt.'</div>
+    <body>
+        <div class="container">
+
+            <?php
+            $txt = '';
+            if (!$admin->check_logged_in()) {
+                $txt = '<a href="list_users.php">Διαχείριση</a>';
+            }
+            echo '<div id="header" class="clearfix">
+                <div class="left"><h2><a href="' . ORG_URL . '" class="button">' . ORG_TITLE . '</a> &raquo; <a href="index.php" class="button">Μισθοδοσία online</a></h2></div>
+                <div class="right subtle">' . $txt . '</div>
               </div>';
 
-        if($admin->check_logged_in()){
-            print_admin_menu();
+            if ($admin->check_logged_in()) {
+                print_admin_menu();
+            }
         }
 
-}
+        function print_footer()
+        {
+            // #todo Να προσθέσω την έκδοση της εφαρμογής δίπλα στο όνομα
+            $version = App::get_version();
 
-function print_footer(){
-    // #todo Να προσθέσω την έκδοση της εφαρμογής δίπλα στο όνομα
-    $version = App::get_version();
-
-	?>
-    	<br />
-    	<hr />
-    	<div class="subtle">Λογισμικό ανοικτού κώδικα "<a href="http://dide.arg.sch.gr/grmixan/misthodosia-online-app/" target="_blank">Μισθοδοσία online</a>" - <?php echo $version ?></span>
-    	</div>
-        <?php
-            if(file_exists(APP_DIR . '/google_analytics.code')){
+            ?>
+            <br />
+            <hr />
+            <div class="subtle">Λογισμικό ανοικτού κώδικα "<a href="http://dide.arg.sch.gr/grmixan/misthodosia-online-app/" target="_blank">Μισθοδοσία online</a>" - <?php echo $version ?></span>
+            </div>
+            <?php
+            if (file_exists(APP_DIR . '/google_analytics.code')) {
                 $ga_code = trim(file_get_contents(APP_DIR . '/google_analytics.code'));
-                if(!empty($ga_code)) echo $ga_code;
+                if (!empty($ga_code)) echo $ga_code;
             }
 
-        ?>
-    	</body>
-    	</html>
-    <?php
+            ?>
+    </body>
+
+    </html>
+<?php
 }
 
-function full_dir(){
+function full_dir()
+{
     return dirname(__FILE__);
 }
 
@@ -191,9 +204,9 @@ function full_dir(){
 function current_dir()
 {
     $path = dirname($_SERVER['PHP_SELF']);
-    $position = strrpos($path,'/') + 1;
-    return substr($path,$position);
-} 
+    $position = strrpos($path, '/') + 1;
+    return substr($path, $position);
+}
 
 
 
@@ -207,18 +220,19 @@ function dump(&$var, $info = FALSE)
     $scope = false;
     $prefix = 'unique';
     $suffix = 'value';
-  
-    if($scope) $vals = $scope;
+
+    if ($scope) $vals = $scope;
     else $vals = $GLOBALS;
 
     $old = $var;
-    $var = $new = $prefix.rand().$suffix; $vname = FALSE;
-    foreach($vals as $key => $val) if($val === $new) $vname = $key;
+    $var = $new = $prefix . rand() . $suffix;
+    $vname = FALSE;
+    foreach ($vals as $key => $val) if ($val === $new) $vname = $key;
     $var = $old;
 
     echo "<pre style='margin: 0px 0px 10px 0px; display: block; background: white; color: black; font-family: Verdana; border: 1px solid #cccccc; padding: 5px; font-size: 12px; line-height: 18px;'>";
-    if($info != FALSE) echo "<b style='color: red;'>$info:</b><br>";
-    do_dump($var, '$'.$vname);
+    if ($info != FALSE) echo "<b style='color: red;'>$info:</b><br>";
+    do_dump($var, '$' . $vname);
     echo "</pre>";
 }
 
@@ -230,52 +244,47 @@ function dump(&$var, $info = FALSE)
 function do_dump(&$var, $var_name = NULL, $indent = NULL, $reference = NULL)
 {
     $do_dump_indent = "<span style='color:#eeeeee;'>|</span> &nbsp;&nbsp; ";
-    $reference = $reference.$var_name;
-    $keyvar = 'the_do_dump_recursion_protection_scheme'; $keyname = 'referenced_object_name';
+    $reference = $reference . $var_name;
+    $keyvar = 'the_do_dump_recursion_protection_scheme';
+    $keyname = 'referenced_object_name';
 
-    if (is_array($var) && isset($var[$keyvar]))
-    {
+    if (is_array($var) && isset($var[$keyvar])) {
         $real_var = &$var[$keyvar];
         $real_name = &$var[$keyname];
         $type = ucfirst(gettype($real_var));
-        echo "$indent$var_name <span style='color:#a2a2a2'>$type</span> = <span style='color:#e87800;'>&amp;$real_name</span><br>";
-    }
-    else
-    {
+        echo "$indent  $var_name <span style='color:#a2a2a2'>$type</span> = <span style='color:#e87800;'>&amp;$real_name</span><br>";
+    } else {
         $var = array($keyvar => $var, $keyname => $reference);
         $avar = &$var[$keyvar];
-    
+
         $type = ucfirst(gettype($avar));
-        if($type == "String") $type_color = "<span style='color:green'>";
-        elseif($type == "Integer") $type_color = "<span style='color:red'>";
-        elseif($type == "Double"){ $type_color = "<span style='color:#0099c5'>"; $type = "Float"; }
-        elseif($type == "Boolean") $type_color = "<span style='color:#92008d'>";
-        elseif($type == "NULL") $type_color = "<span style='color:black'>";
-    
-        if(is_array($avar))
-        {
+        if ($type == "String") $type_color = "<span style='color:green'>";
+        elseif ($type == "Integer") $type_color = "<span style='color:red'>";
+        elseif ($type == "Double") {
+            $type_color = "<span style='color:#0099c5'>";
+            $type = "Float";
+        } elseif ($type == "Boolean") $type_color = "<span style='color:#92008d'>";
+        elseif ($type == "NULL") $type_color = "<span style='color:black'>";
+
+        if (is_array($avar)) {
             $count = count($avar);
-            echo "$indent" . ($var_name ? "$var_name => ":"") . "<span style='color:#a2a2a2'>$type ($count)</span><br>$indent(<br>";
+            echo "$indent" . ($var_name ? "$var_name => " : "") . "<span style='color:#a2a2a2'>$type ($count)</span><br>$indent(<br>";
             $keys = array_keys($avar);
-            foreach($keys as $name)
-            {
+            foreach ($keys as $name) {
                 $value = &$avar[$name];
-                do_dump($value, "['$name']", $indent.$do_dump_indent, $reference);
+                do_dump($value, "['$name']", $indent . $do_dump_indent, $reference);
             }
             echo "$indent)<br>";
-        }
-        elseif(is_object($avar))
-        {
-            echo "$indent$var_name <span style='color:#a2a2a2'>$type</span><br>$indent(<br>";
-            foreach($avar as $name=>$value) do_dump($value, "$name", $indent.$do_dump_indent, $reference);
+        } elseif (is_object($avar)) {
+            echo "$indent  $var_name <span style='color:#a2a2a2'>$type</span><br>$indent(<br>";
+            foreach ($avar as $name => $value) do_dump($value, "$name", $indent . $do_dump_indent, $reference);
             echo "$indent)<br>";
-        }
-        elseif(is_int($avar)) echo "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> $type_color$avar</span><br>";
-        elseif(is_string($avar)) echo "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> $type_color\"$avar\"</span><br>";
-        elseif(is_float($avar)) echo "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> $type_color$avar</span><br>";
-        elseif(is_bool($avar)) echo "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> $type_color".($avar == 1 ? "TRUE":"FALSE")."</span><br>";
-        elseif(is_null($avar)) echo "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> {$type_color}NULL</span><br>";
-        else echo "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> $avar<br>";
+        } elseif (is_int($avar)) echo "$indent  $var_name = <span style='color:#a2a2a2'>$type(" . strlen($avar) . ")</span> $type_color $avar</span><br>";
+        elseif (is_string($avar)) echo "$indent  $var_name = <span style='color:#a2a2a2'>$type(" . strlen($avar) . ")</span> $type_color\"$avar\"</span><br>";
+        elseif (is_float($avar)) echo "$indent  $var_name = <span style='color:#a2a2a2'>$type(" . strlen($avar) . ")</span> $type_color $avar</span><br>";
+        elseif (is_bool($avar)) echo "$indent  $var_name = <span style='color:#a2a2a2'>$type(" . strlen($avar) . ")</span> $type_color" . ($avar == 1 ? "TRUE" : "FALSE") . "</span><br>";
+        elseif (is_null($avar)) echo "$indent  $var_name = <span style='color:#a2a2a2'>$type(" . strlen($avar) . ")</span> {$type_color}NULL</span><br>";
+        else echo "$indent  $var_name = <span style='color:#a2a2a2'>$type(" . strlen($avar) . ")</span> $avar<br>";
 
         $var = $var[$keyvar];
     }
@@ -296,7 +305,8 @@ function do_dump(&$var, $var_name = NULL, $indent = NULL, $reference = NULL)
  * @param string $string What to add the trailing slash to.
  * @return string String with trailing slash added.
  */
-function trailingslashit($string) {
+function trailingslashit($string)
+{
     return untrailingslashit($string) . '/';
 }
 
@@ -311,52 +321,54 @@ function trailingslashit($string) {
  * @param string $string What to remove the trailing slash from.
  * @return string String without the trailing slash.
  */
-function untrailingslashit($string) {
+function untrailingslashit($string)
+{
     return rtrim($string, '/');
 }
 
-function check_afm($afm){
-// Ελέγχει αν ο ΑΦΜ είναι έγκυρος και επιστρέφει true ή false
-    if ($afm == '' || strlen($afm) != 9){
+function check_afm($afm)
+{
+    // Ελέγχει αν ο ΑΦΜ είναι έγκυρος και επιστρέφει true ή false
+    if ($afm == '' || strlen($afm) != 9) {
         return false;
     } else {
-        $cd = substr($afm, 8, 1); 
+        $cd = substr($afm, 8, 1);
     }
-    if ($afm == '000000000'){
+    if ($afm == '000000000') {
         return false;
     }
 
     $sum = 0;
     $afm_ok = false;
 
-    for($i=0; $i<8; $i++){
-        if (ord(substr($afm, $i, 1)) < 48 || ord(substr($afm, $i, 1)) > 57){
-            return false;        
+    for ($i = 0; $i < 8; $i++) {
+        if (ord(substr($afm, $i, 1)) < 48 || ord(substr($afm, $i, 1)) > 57) {
+            return false;
         } else {
             $d = substr($afm, $i, 1);
-            if ($i<8){
-                $sum = $sum + $d * pow(2,8-$i);
+            if ($i < 8) {
+                $sum = $sum + $d * pow(2, 8 - $i);
             }
         }
     }
-    if ($sum == 0){
+    if ($sum == 0) {
         return false;
     } else {
         $calc = $sum % 11;
-        if ($calc == $cd || (($calc == 0 || $calc == 10) && $cd == 0) ){
+        if ($calc == $cd || (($calc == 0 || $calc == 10) && $cd == 0)) {
             return true;
         } else {
             return false;
-        } 
+        }
     }
-
 }
 
-function display_xml_error_message($file, $show_delete_link = true){
-    $show_delete_link ? $delete_link =  '<a href="file='.urlencode($file).'" class="delete confirm" rel="Είστε σίγουρος ότι θέλετε να διαγράψετε αυτό το αρχείο;">Διαγραφή</a>' : $delete_link ='';
+function display_xml_error_message($file, $show_delete_link = true)
+{
+    $show_delete_link ? $delete_link =  '<a href="file=' . urlencode($file) . '" class="delete confirm" rel="Είστε σίγουρος ότι θέλετε να διαγράψετε αυτό το αρχείο;">Διαγραφή</a>' : $delete_link = '';
     echo '
         <div class="error"><hr>Η φόρτωση του αρχείου 
-            <span style="font-weight: bold">' . $file . '</span> απέτυχε.'.$delete_link.'<br><br>
+            <span style="font-weight: bold">' . $file . '</span> απέτυχε.' . $delete_link . '<br><br>
             <span style="color: #666; font-style: italic">Το παραπάνω αρχείο δεν έχει έγκυρη δομή xml. Παρακαλούμε προσπαθήστε να εξάγετε εκ νέου το αρχείο
             από το πρόγραμμα μισθοδοσίας σας και να το ανεβάσετε και πάλι εδώ. Διαφορετικά προσπαθήστε να διορθώσετε
             χειροκίνητα τα λάθη ανοίγοντας το .xml αρχείο με κάποιον επεξεργαστή κειμένου.</span>
@@ -366,9 +378,10 @@ function display_xml_error_message($file, $show_delete_link = true){
         </div>';
 }
 
-function display_xml_errors() {
+function display_xml_errors()
+{
     $errors = libxml_get_errors();
-        
+
     echo '<div class="xml-errors" style="display: none; border: 1px solid #666; padding: 20px">';
     foreach ($errors as $error) {
         echo display_xml_error($error);
@@ -388,7 +401,7 @@ function display_xml_error($error)
         case LIBXML_ERR_WARNING:
             $return .= "Warning $error->code: ";
             break;
-         case LIBXML_ERR_ERROR:
+        case LIBXML_ERR_ERROR:
             $return .= "Error $error->code: ";
             break;
         case LIBXML_ERR_FATAL:
@@ -398,7 +411,7 @@ function display_xml_error($error)
 
     $return .= '<span style="font-weight: bold">' . trim($error->message) . '</span>';
     $return .= "<br><b>Line: $error->line</b>" .
-               "<br>Column: $error->column";
+        "<br>Column: $error->column";
 
     if ($error->file) {
         $return .= "<br>  File: $error->file";
@@ -448,5 +461,30 @@ function xcopy($source, $dest, $permissions = 0755)
 
     // Clean up
     $dir->close();
+    return true;
+}
+
+/**
+ * Deletes a directory and all of its contents (files or subfolders)
+ */
+function delete_folder($dir)
+{
+    $files = array_diff(scandir($dir), array('.', '..'));
+    foreach ($files as $file) {
+        (is_dir("$dir/$file")) ? delete_folder("$dir/$file") : unlink("$dir/$file");
+    }
+    return rmdir($dir);
+}
+
+
+/**
+ * It empties the target folder. Deletes all of its contents (files or subfolders) but not the target folder
+ */
+function empty_folder($dir)
+{
+    $files = array_diff(scandir($dir), array('.', '..'));
+    foreach ($files as $file) {
+        (is_dir("$dir/$file")) ? delete_folder("$dir/$file") : unlink("$dir/$file");
+    }
     return true;
 }
