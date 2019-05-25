@@ -19,6 +19,7 @@ class App
     private $last_checked;
 
     private $repo; // This will hold the github instance
+    private $repo_url = 'https://api.github.com/repos/fractalbit/misthodosia-online/';
 
     public function __construct()
     {
@@ -30,9 +31,7 @@ class App
             $this->simulate = true;
             $this->app_dir  = $this->app_dir . $this->simulate_dir;
             $this->current_version = $this->simulate_ver;
-            // I should really save the version in a separate file
-            // Should think this through on how to manage the simulate part
-            // Also change the get_version method
+            $this->repo_url = 'https://api.github.com/repos/fractalbit/misthodosia-online-test-updates/';
         }
 
         $this->folders = array(
@@ -44,7 +43,7 @@ class App
         // I should create the folders if they do not exist (for some reason)
         $this->create_folders();
 
-        $this->repo = new Github();
+        $this->repo = new Github($this->repo_url);
 
         $this->check_newer();
     }
@@ -65,10 +64,11 @@ class App
         }
     }
 
+    /**
+     * Only checks if the session expired or the force_check flag is set
+     */
     public function check_newer($force_check = false)
     {
-        // Only checks if the session expired or the force_check flag is set
-
         if ($force_check) {
             $this->get_releases();
         } else {
@@ -96,38 +96,40 @@ class App
         $repo = $this->repo;
 
         $releases = json_decode($repo->get('releases'), true);
-        if (version_compare($this->current_version, $releases[0]['tag_name']) < 0)
-            $this->changelog = '<h3 style="font-weight: normal">Αλλαγές από την έκδοση <strong>' . $this->current_version .
-                '</strong> (τρέχουσα έκδοση) έως την έκδοση <strong>' . $releases[0]['tag_name'] . '</strong> (πιο πρόσφατη)</h3><hr>';
+        // dump($releases);
+        if (!empty($releases) && !array_key_exists('message', $releases)) {
+            if (version_compare($this->current_version, $releases[0]['tag_name']) < 0)
+                $this->changelog = '<h3 style="font-weight: normal">Αλλαγές από την έκδοση <strong>' . $this->current_version .
+                    '</strong> (τρέχουσα έκδοση) έως την έκδοση <strong>' . $releases[0]['tag_name'] . '</strong> (πιο πρόσφατη)</h3><hr>';
 
-        foreach ($releases as $data) {
-            $Parsedown = new Parsedown();
-            $created_at = self::convert_date($data['created_at']);
-            $published_at = self::convert_date($data['published_at']);
-            $html = $Parsedown->text('## ' . $data['name'] . "\n _Δημοσιεύτηκε στις " . $published_at . "_\n" . $data['body']);
+            foreach ($releases as $data) {
+                $Parsedown = new Parsedown();
+                $created_at = self::convert_date($data['created_at']);
+                $published_at = self::convert_date($data['published_at']);
+                $html = $Parsedown->text('## ' . $data['name'] . "\n _Δημοσιεύτηκε στις " . $published_at . "_\n" . $data['body']);
 
-            $release = array(
-                'tag' => $data['tag_name'],
-                'name' => $data['name'],
-                'created' => $created_at,
-                'published' => $published_at,
-                'zip_url' =>  $data['zipball_url'],
-                'html' => $html,
-            );
+                $release = array(
+                    'tag' => $data['tag_name'],
+                    'name' => $data['name'],
+                    'created' => $created_at,
+                    'published' => $published_at,
+                    'zip_url' =>  $data['zipball_url'],
+                    'html' => $html,
+                );
 
-            if (version_compare($this->current_version, $release['tag']) < 0) {
-                // Add to this versions info to the changeog
-                $this->changelog .= $html;
+                if (version_compare($this->current_version, $release['tag']) < 0) {
+                    // Add to this versions info to the changeog
+                    $this->changelog .= $html;
+                }
+
+                $this->releases[] = $release;
             }
-
-            $this->releases[] = $release;
         }
-
         $this->last_checked = date("d/m/Y H:i:s", time());
 
-        fsession::set('releases', $this->releases);
-        fsession::set('changelog', $this->changelog);
-        fsession::set('last_checked', $this->last_checked);
+        fSession::set('releases', $this->releases);
+        fSession::set('changelog', $this->changelog);
+        fSession::set('last_checked', $this->last_checked);
 
         // echo $this->releases[0]['html'];
         // echo $this->releases[1]['html'];
@@ -165,7 +167,10 @@ class App
      */
     public function print_notification()
     {
-        if (!empty($this->changelog)) {
+        $scriptArgs = explode('/', $_SERVER['PHP_SELF']);
+        $current_script = end($scriptArgs);
+        // dump($current_script);
+        if (!empty($this->changelog) && $current_script !== 'update.php') {
             echo '<div style="margin: 10px;">Υπάρχει διαθέσιμη μία νέα έκδοση - <a href="update.php">Ενημέρωση της εφαρμογής</a></div>';
         }
     }
@@ -178,7 +183,8 @@ class App
         $this->releases[0]['zip_local'] = $this->folders['downloads'] . 'misthodosia-online-' . $latest['tag'] . '.zip';
 
         file_put_contents($this->releases[0]['zip_local'], $download);
-        fsession::set('releases', $this->releases); // So the location of the zip is cached for the extract method to use
+        fSession::set('releases', $this->releases); // So the location of the zip is cached for the extract method to use
+        fSession::set('prev_version', self::get_version()); // This is used in the cleanup function        
     }
 
     public function extract_latest()
@@ -242,7 +248,8 @@ class App
         // Now let's log the update process
         $latest = $this->releases[0];
         if ($latest['tag'] === self::get_version()) {
-            $message = date('d/m/Y H:i:s', time()) . ' - Η εφαρμογή αναβαθμίστηκε στην έκδοση ' . $latest['tag'] . ' (από την ' . $this->current_version . ')';
+            $message = date('d/m/Y H:i:s', time()) . ' - Η εφαρμογή αναβαθμίστηκε στην έκδοση ' . $latest['tag'] . ' (από την ' . fSession::get('prev_version') . ')';
+            // dump(fSession::get('prev_version'));
             savelog($message);
             // Along with the admin log also log to different file the update actions
             savelog($message, 'update_log.txt');
