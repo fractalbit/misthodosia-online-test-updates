@@ -1,8 +1,6 @@
 <?php
 class App
 {
-
-    private static $version  = 'v2.6.0'; // static variables can only be accessed from static methods
     private $current_version;
     // This should be changed every time we push to github
     // while also creating the actual correspoding git tag
@@ -24,13 +22,12 @@ class App
 
     public function __construct()
     {
-        $this->current_version = self::$version;
 
         $this->app_dir = trailingslashit(dirname(__FILE__));
+        $this->current_version = self::get_version();
 
         if (is_dir('.git')) { // This means we are in a dev enviroment. We should be carefull not to overwrite our working directory!
             $this->simulate = true;
-
             $this->app_dir  = $this->app_dir . $this->simulate_dir;
             $this->current_version = $this->simulate_ver;
             // I should really save the version in a separate file
@@ -144,16 +141,32 @@ class App
         return $date->format("d/m/Y H:i");
     }
 
+    /**
+     *  Τυπώνει το changelog
+     */
     public function print_newer()
     {
-        echo '<div style="font-style: italic">Έγινε έλεγχος για ενημερώσεις στις: ' . $this->last_checked . '</div>';
+        echo '<div style="font-style: italic; margin-top: 20px">Έγινε έλεγχος για ενημερώσεις στις: ' . $this->last_checked . '</div>';
         if (!empty($this->changelog)) {
             echo '<h3>Υπάρχουν διαθέσιμες ενημερώσεις...</h3>';
-            echo '<input id="start-update" type="button" value="Αυτόματη ενημέρωση στην τελευταία έκδοση">';
+            echo 'Η αυτόματη ενημέρωση είναι σε πειραματικό στάδιο και δεν έχει δοκιμαστεί επαρκώς. <strong>Παρακαλούμε προχωρήστε με δική σας ευθύνη.</strong>
+            Σε περίπτωση που αποτύχει θα πρέπει να αναβαθμίσετε την εφαρμογή με βάση τις οδηγίες της <a href="https://github.com/fractalbit/misthodosia-online/blob/master/readme.md">τεκμηρίωσης</a>.';
+            echo '<br><input type="checkbox" name="accept-danger" id="accept-danger"> <label for="accept-danger" style="min-width: 140px">Κατανοώ τους κινδύνους</label>';
+            echo '<br><input id="start-update" type="button" value="Αυτόματη ενημέρωση στην τελευταία έκδοση" disabled>';
             echo '<div id="update-results"></div><hr>';
             echo $this->changelog;
         } else {
             echo '<h3>Έχετε την τελευταία έκδοση της εφαρμογής.</h3>';
+        }
+    }
+
+    /**
+     *  Τυπώνει το changelog
+     */
+    public function print_notification()
+    {
+        if (!empty($this->changelog)) {
+            echo '<div style="margin: 10px;">Υπάρχει διαθέσιμη μία νέα έκδοση - <a href="update.php">Ενημέρωση της εφαρμογής</a></div>';
         }
     }
 
@@ -228,19 +241,36 @@ class App
 
         // Now let's log the update process
         $latest = $this->releases[0];
-        $message = date('d/m/Y H:i:s', time()) . ' - Η εφαρμογή αναβαθμίστηκε στην έκδοση ' . $latest['tag'] . ' (από την ' . $this->current_version . ')';
-        savelog($message);
+        if ($latest['tag'] === self::get_version()) {
+            $message = date('d/m/Y H:i:s', time()) . ' - Η εφαρμογή αναβαθμίστηκε στην έκδοση ' . $latest['tag'] . ' (από την ' . $this->current_version . ')';
+            savelog($message);
+            // Along with the admin log also log to different file the update actions
+            savelog($message, 'update_log.txt');
+        } else {
+            $message = date('d/m/Y H:i:s', time()) . ' - Έγινε προσπάθεια αναβάθμισης αλλά οι εκδόσεις δεν ταιριάζουν (target: ' . $latest['tag'] . ', current: ' . self::get_version() . ')';
+            savelog($message);
+            // Along with the admin log also log to different file the update actions
+            savelog($message, 'update_log.txt');
+        }
+    }
 
-        // Along with the admin log also log to different file the update actions
-        savelog($message, 'update_log.txt');
+    public function print_update_log()
+    {
+        echo '<div class="box">
+                <h3>Ιστορικό ενημερώσεων</h3>';
 
+        $logfile = trailingslashit(APP_DIR) . 'update_log.txt';
 
-        // I should update this function to work correctly
-        // Currently it will log success even if the update process failed!
+        if (file_exists($logfile)) {
+            $log = array_reverse(file($logfile));
 
-        // I should probaly store the app version in a file
-        // And check that the new version matches the one download and installed
-
+            foreach ($log as $line) {
+                echo $line . '<br />';
+            }
+        } else {
+            echo 'Δεν έχουν πραγματοποιηθεί ακόμα ενημερώσεις';
+        }
+        echo '</div>';
     }
 
     public function update()
@@ -248,10 +278,15 @@ class App
         // Do it all in one go here. Not used, just to have the overall picture
     }
 
-
     public static function get_version()
     {
-        return self::$version;
+        is_dir('.git') ? $version_file = 'simulate/version.txt' : $version_file = 'version.txt';
+        if (file_exists($version_file)) {
+            $version = trim(file_get_contents($version_file));
+        } else {
+            $version = 'v2.1.2';
+        }
+        return $version;
     }
 }
 

@@ -21,9 +21,12 @@
 // Το αρχείο αυτό γίνεται include στα αρχεία της εφαρμογής και φορτώνει όλα τα απαραίτητα αρχεία για τη λειτουργία της
 /* *********** ΤΕΛΟΣ ΓΕΝΙΚΗΣ ΠΕΡΙΓΡΑΦΗΣ *********** */
 
-// error_reporting(E_ALL); ini_set('display_errors', '1');
+if (is_dir('.git')) {
+    error_reporting(E_ALL);
+    ini_set('display_errors', '1');
+}
 
-if(!file_exists('config.inc.php')) die('To arxeio config.inc.php de vrethike. Parakaloume diavaste <a href="https://github.com/fractalbit/misthodosia-online/blob/master/readme.md">tin tekmiriosi</a>');
+if (!file_exists('config.inc.php')) die('To arxeio config.inc.php de vrethike. Parakaloume diavaste <a href="https://github.com/fractalbit/misthodosia-online/blob/master/readme.md">tin tekmiriosi</a>');
 
 require_once './functions.inc.php';
 
@@ -41,41 +44,41 @@ require_once './ranks.php';
 require_once './eapCodes.php';
 
 
-if(file_exists('passwords.php') && !file_exists(APP_DIR . '/passwords.php')){
+if (file_exists('passwords.php') && !file_exists(APP_DIR . '/passwords.php')) {
     // Αυτό θα (πρεπει) να τρέξει μόνο μία φορά για να υπάρξει ομαλή μετάβαση στο νέο σύστημα διαχείρισης κωδικών!
-    
+
     include('./passwords.php'); // Φόρτωσε τους υπάρχοντες κωδικούς
-    if(!empty($protected)) save_file(APP_DIR . '/passwords.php', $protected); // Αν υπάρχουν, αποθήκευσέ τους στο νέο αρχείο
+    if (!empty($protected)) save_file(APP_DIR . '/passwords.php', $protected); // Αν υπάρχουν, αποθήκευσέ τους στο νέο αρχείο
 
     // Φτιάξε ένα νέο passwords.php με επεξηγηματικό κείμενο για το νέο σύστημα
     $explain = '<?php // Το αρχείο αυτό δεν χρησιμοποείται πλέον. Η διαχείριση των κωδικών γίνεται από τη σελίδα "Ρυθμίσεις". Κάντε είσοδο ως διαχειριστής για να διαχειριστείτε τους κωδικούς.';
     file_put_contents('passwords.php', $explain);
 }
 
-if(file_exists('passwords.sample.php')) unlink('passwords.sample.php');
+if (file_exists('passwords.sample.php')) unlink('passwords.sample.php');
 
 // Load the protected array (afm->password combinations)
-if(file_exists(APP_DIR . '/passwords.php')){
+if (file_exists(APP_DIR . '/passwords.php')) {
     $protected = load_file(APP_DIR . '/passwords.php'); // Φόρτωσε το αρχείο με τους κωδικούς
-}else{
+} else {
     $protected = array();
 }
 
 // Φόρτωσε τα κείμενα της αρχικής σελίδας
-if(file_exists(APP_DIR . '/texts.json')) {
+if (file_exists(APP_DIR . '/texts.json')) {
     $txt = json_decode(file_get_contents(APP_DIR . '/texts.json'), true); // Φόρτωσε το αρχείο γλώσσας
-}else{
+} else {
     $txt = array(
-                        'header' => '<p>Παρακαλούμε εισάγετε ΑΦΜ, Αρ. Μητρώου και πιέστε "Συνέχεια" για να εμφανιστούν τα μισθοδοτικά σας στοιχεία</p>',
-                        
-                        'login_below' => '<p>Σημείωση: Όσοι δεν έχουν 6ψήφιο αριθμό μητρώου (π.χ. αναπληρωτές), πρέπει να αφήσουν το σχετικό πεδίο ασυμπλήρωτο.</p>
-                            <p>Σημείωση: Όσοι έχουν προστατεύσει το ΑΦΜ τους με κωδικό, θα πρέπει να εισάγουν αυτόν στο πεδίο Αρ. Μητρώου.</p>',
-                        
-                        'footer' => 'Προσοχή! Τα μισθοδοτικά στοιχεία παρέχονται για ενημέρωση και μόνο. Αν χρειάζεστε βεβαίωση αποδοχών με υπογραφή εκκαθαριστή και σφραγίδα υπηρεσίας (π.χ. για κατάθεση σε τράπεζα, σε άλλη υπηρεσία κ.τ.λ.), θα πρέπει να τη ζητήσετε από τη Δ/νση.',
+        'header' => '<p>Παρακαλούμε εισάγετε ΑΦΜ, Αρ. Μητρώου και πιέστε "Συνέχεια" για να εμφανιστούν τα μισθοδοτικά σας στοιχεία</p>',
 
-                        'afm_label' => 'Α.Φ.Μ.:',
-                        'amm_label' => 'Αρ. Μητρώου ή κωδικός:'
-                    );
+        'login_below' => '<p>Σημείωση: Όσοι δεν έχουν 6ψήφιο αριθμό μητρώου (π.χ. αναπληρωτές), πρέπει να αφήσουν το σχετικό πεδίο ασυμπλήρωτο.</p>
+                            <p>Σημείωση: Όσοι έχουν προστατεύσει το ΑΦΜ τους με κωδικό, θα πρέπει να εισάγουν αυτόν στο πεδίο Αρ. Μητρώου.</p>',
+
+        'footer' => 'Προσοχή! Τα μισθοδοτικά στοιχεία παρέχονται για ενημέρωση και μόνο. Αν χρειάζεστε βεβαίωση αποδοχών με υπογραφή εκκαθαριστή και σφραγίδα υπηρεσίας (π.χ. για κατάθεση σε τράπεζα, σε άλλη υπηρεσία κ.τ.λ.), θα πρέπει να τη ζητήσετε από τη Δ/νση.',
+
+        'afm_label' => 'Α.Φ.Μ.:',
+        'amm_label' => 'Αρ. Μητρώου ή κωδικός:'
+    );
 }
 
 // $session_path = trailingslashit(APP_DIR) . 'session_data';

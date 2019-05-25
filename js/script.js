@@ -72,6 +72,16 @@ $(function () {
 		$('.xml-errors').toggle(300);
 	});
 
+	$('#accept-danger').click(function () {
+		var accept = $(this).is(":checked");
+		// console.log(accept);
+		if (accept) {
+			$('#start-update').prop('disabled', false);
+		} else {
+			$('#start-update').prop('disabled', true);
+		}
+	});
+
 	var ajaxExecute = function (url) {
 		return $.ajax({
 			url: url,
@@ -83,6 +93,7 @@ $(function () {
 		var errorText = '. <div class="error"><strong>Συνέβη ένα σφάλμα</strong>, ' + jqXHR.status + ' - ' + jqXHR.statusText + ': ' + jqXHR.responseText + '</div>';
 		return errorText;
 	};
+
 
 	$('#start-update').click(function () {
 
@@ -163,6 +174,12 @@ $(function () {
 			var info = '. <strong>' + data + '</strong> σε ' + (request_time / 1000).toFixed(1) + 's';
 			$('#cleanup').hide();
 			$('#update-results').append(info);
+
+			var finished = '<br><br>Η διαδικασία της αναβάθμισης ολοκληρώθηκε. Παρακαλούμε περιμένετε να γίνει επαναφόρτωση..';
+			$('#update-results').append(finished);
+			setTimeout(() => {
+				window.location.replace("update.php");
+			}, 3000);
 		});
 
 		cleanup.fail(function (jqXHR, textStatus, errorThrown) {

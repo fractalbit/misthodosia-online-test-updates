@@ -163,6 +163,8 @@ function print_header()
 
             if ($admin->check_logged_in()) {
                 print_admin_menu();
+                $mo = new App();
+                $mo->print_notification();
             }
         }
 
