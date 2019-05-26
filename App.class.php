@@ -158,11 +158,12 @@ class App
             echo '<br><input type="checkbox" name="accept-danger" id="accept-danger"> <label for="accept-danger" style="min-width: 160px">Αποδέχομαι τους κινδύνους</label>';
             echo '<br><input id="start-update" class="update-button" type="button" value="Αυτόματη ενημέρωση στην τελευταία έκδοση" disabled>';
             echo '<div id="update-results"></div>';
-            echo '</div>'; // End .box
-            echo '<div class="box">' . $this->changelog . '</div>';
         } else {
             echo '<h3>Έχετε την τελευταία έκδοση της εφαρμογής.</h3>';
         }
+        echo '</div>'; // End .box
+        if (!empty($this->changelog))
+            echo '<div class="box">' . $this->changelog . '</div>';
     }
 
     /**
