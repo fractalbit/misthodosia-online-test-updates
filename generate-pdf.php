@@ -91,16 +91,16 @@ $html = $html_header;
 // $page_id = 0; // This should be changed to get the value from the ajax request
 
 $page_id = $_GET['pid'];
-$pid = (int) $page_id;
+$pid = (int)$page_id;
 // dump($pages); die();
-if($pid > 1900){ // $pid is a year then and not a direct page id 
+if ($pid > 1900) { // $pid is a year then and not a direct page id 
 	$page_ids = $pdf_years[$pid]; // This holds an array with all the page ids for that year ($pid)
 	arsort($page_ids);
-	foreach($page_ids as $cur_page){		
-		$html .= $pages[$cur_page];	
-		$html .= $page_break;		
+	foreach ($page_ids as $cur_page) {
+		$html .= $pages[$cur_page];
+		$html .= $page_break;
 	}
-}else{
+} else {
 	$html .= $pages[$pid];
 	// $html .= $page_break;	
 }
@@ -115,8 +115,8 @@ $dompdf->loadHtml($html);
 $dompdf->setPaper('A4', 'portrait');
 
 
-if(defined('ORG_URL') && strlen(ORG_URL)>0){
-	if(defined('USER_DIR') && is_dir(USER_DIR)){
+if (defined('ORG_URL') && strlen(ORG_URL) > 0) {
+	if (defined('USER_DIR') && is_dir(USER_DIR)) {
 		// $salt = rand_str(5); 
 
 		// Αν και τα .pdf αρχεία διαγράφονται αυτόματα, 10 λεπτά (CLEAN_UP_AFTER) μετά τη δημιουργία τους, σαν επιπλέον μέτρο ασφαλείας...
@@ -130,17 +130,17 @@ if(defined('ORG_URL') && strlen(ORG_URL)>0){
 		$dompdf->render();
 
 		file_put_contents($output_file, $dompdf->output());
-		
-		if(!$admin->check_logged_in()){                        
-		    $message = date('d/m/Y H:i:s', time()) . ' - Ο χρήστης ' . $name . ' δημιούργησε PDF';
-		    savelog($message, 'user_log.txt');
-		}else{
-		    $message = date('d/m/Y H:i:s', time()) . ' - Ο διαχειριστής είδε δημιούργησε PDF για τον ' . $name;
-		    savelog($message);
+
+		if (!$admin->check_logged_in()) {
+			$message = 'Ο χρήστης ' . $name . ' δημιούργησε PDF';
+			save_to_log($message, 'user_log.txt');
+		} else {
+			$message = 'Ο διαχειριστής είδε δημιούργησε PDF για τον ' . $name;
+			save_to_log($message);
 		}
-	}else{
+	} else {
 		echo 'Δεν έχει οριστεί φάκελος χρηστών ή αυτός που έχει οριστεί δεν υπάρχει';
 	}
-}else{
+} else {
 	echo 'Δεν έχει οριστεί η διεύθυνση URL του site';
 }

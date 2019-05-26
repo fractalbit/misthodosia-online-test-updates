@@ -114,11 +114,11 @@ if (isset($_POST['proccess']) || isset($_GET['afm'])) {
                     }
 
                     if (!$admin->check_logged_in()) {
-                        $message = date('d/m/Y H:i:s', time()) . ' - Ο χρήστης ' . $name . ' είδε τη μισθοδοσία του';
-                        savelog($message, 'user_log.txt');
+                        $message = 'Ο χρήστης ' . $name . ' είδε τη μισθοδοσία του';
+                        save_to_log($message, 'user_log.txt');
                     } else {
-                        $message = date('d/m/Y H:i:s', time()) . ' - Ο διαχειριστής είδε τη μισθοδοσία του ' . $name;
-                        savelog($message);
+                        $message = 'Ο διαχειριστής είδε τη μισθοδοσία του ' . $name;
+                        save_to_log($message);
                     }
                 } else {
                     echo '<div class="error box" style="margin-bottom: 30px;"><h3>Παρουσιάστηκε ένα σφάλμα...</h3>
@@ -126,8 +126,8 @@ if (isset($_POST['proccess']) || isset($_GET['afm'])) {
 
                     print_form('amm');
                     if (!$admin->check_logged_in()) {
-                        $message = date('d/m/Y H:i:s', time()) . ' - Ο χρήστης ' . $name . ' έδωσε λάθος αριθμό μητρώου (ή κωδικό)';
-                        savelog($message, 'user_log.txt');
+                        $message = 'Ο χρήστης ' . $name . ' έδωσε λάθος αριθμό μητρώου (ή κωδικό)';
+                        save_to_log($message, 'user_log.txt');
                     }
                     // stat_log($afm, "failed-arithmos-mitroou");
                 }

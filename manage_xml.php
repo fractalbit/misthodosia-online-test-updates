@@ -54,8 +54,8 @@ if (admin_configured()) {
             $uploader->move($dir, 'file');
 
             //dump($uploader);
-            $message = date('d/m/Y H:i:s', time()) . ' - Ο διαχειριστής ανέβασε το αρχείο ' . $_FILES['file']['name'];
-            savelog($message);
+            $message = 'Ο διαχειριστής ανέβασε το αρχείο ' . $_FILES['file']['name'];
+            save_to_log($message);
         }
 
         ?>
