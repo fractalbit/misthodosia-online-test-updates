@@ -62,6 +62,20 @@ function savelog($message, $file = 'admin_log.txt')
     fclose($log);
 }
 
+/**
+ * Saves the message along with the current date-time to the specified log file
+ * If no file is given, the admin log file is used
+ */
+function save_to_log($message, $file = 'admin_log.txt')
+{
+    $file = APP_DIR . '/' . $file;
+    $log = fopen($file, 'a+');
+
+    $message =  date('d/m/Y H:i:s', time()) . ' - ' . $message . "\r\n";
+    fwrite($log, $message);
+    fclose($log);
+}
+
 function get_admin_menu()
 {
     $menu = array(

@@ -31,7 +31,7 @@ if (!file_exists('config.inc.php')) die('To arxeio config.inc.php de vrethike. P
 require_once './functions.inc.php';
 
 // Here we load everything we need for the automatic updates to work
-require_once './Update.class.php';
+require_once './App.class.php';
 require_once './Parsedown.php';
 // End of automatic updates includes
 

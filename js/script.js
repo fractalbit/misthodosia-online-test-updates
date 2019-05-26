@@ -72,6 +72,11 @@ $(function () {
 		$('.xml-errors').toggle(300);
 	});
 
+	$('#show-more-log').click(function (event) {
+		event.preventDefault();
+		$('#all-update-log').toggle(300);
+	});
+
 	$('#accept-danger').click(function () {
 		var accept = $(this).is(":checked");
 		// console.log(accept);
@@ -80,6 +85,10 @@ $(function () {
 		} else {
 			$('#start-update').prop('disabled', true);
 		}
+	});
+
+	$('#start-update').click(function () {
+		$(this).prop('disabled', true);
 	});
 
 	var ajaxExecute = function (url) {

@@ -394,3 +394,14 @@ ul.pws_tabs_controll {
 .ajax-loader {
 	margin-left: 12px;
 }
+
+.box {
+	background: #fff;
+	padding: 15px;
+	margin: 20px 0;
+}
+
+.update-button {
+	padding: 10px;
+	/* border-radius: 5px; */
+}

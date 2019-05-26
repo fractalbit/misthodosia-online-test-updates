@@ -24,7 +24,7 @@ class App
     public function __construct()
     {
 
-        $this->app_dir = trailingslashit(dirname(__FILE__));
+        $this->app_dir = trailingslashit(__DIR__);
         $this->current_version = self::get_version();
 
         if (is_dir('.git')) { // This means we are in a dev enviroment. We should be carefull not to overwrite our working directory!
@@ -50,6 +50,7 @@ class App
 
     private function create_folders()
     {
+        if (is_dir('.git') && !is_dir($this->simulate_dir)) mkdir($this->simulate_dir, 0755);
         foreach ($this->folders as $folder) {
             if (!is_dir($folder)) mkdir($folder, 0755);
         }
@@ -106,7 +107,7 @@ class App
                 $Parsedown = new Parsedown();
                 $created_at = self::convert_date($data['created_at']);
                 $published_at = self::convert_date($data['published_at']);
-                $html = $Parsedown->text('## ' . $data['name'] . "\n _Δημοσιεύτηκε στις " . $published_at . "_\n" . $data['body']);
+                $html = '<h2 style="margin-top: 35px;">' . $data['name'] . '</h2><div style="margin-top: -15px; font-style: italic; color: #666;">Δημοσιεύτηκε στις ' . $published_at . '</div>'  . $Parsedown->text($data['body']);
 
                 $release = array(
                     'tag' => $data['tag_name'],
@@ -148,15 +149,17 @@ class App
      */
     public function print_newer()
     {
-        echo '<div style="font-style: italic; margin-top: 20px">Έγινε έλεγχος για ενημερώσεις στις: ' . $this->last_checked . '</div>';
+        echo '<div class="box">';
+        echo '<div style="font-style: italic;">Έγινε έλεγχος για ενημερώσεις στις: ' . $this->last_checked . '</div>';
         if (!empty($this->changelog)) {
             echo '<h3>Υπάρχουν διαθέσιμες ενημερώσεις...</h3>';
             echo 'Η αυτόματη ενημέρωση είναι σε πειραματικό στάδιο και δεν έχει δοκιμαστεί επαρκώς. <strong>Παρακαλούμε προχωρήστε με δική σας ευθύνη.</strong>
             Σε περίπτωση που αποτύχει θα πρέπει να αναβαθμίσετε την εφαρμογή με βάση τις οδηγίες της <a href="https://github.com/fractalbit/misthodosia-online/blob/master/readme.md">τεκμηρίωσης</a>.';
-            echo '<br><input type="checkbox" name="accept-danger" id="accept-danger"> <label for="accept-danger" style="min-width: 140px">Κατανοώ τους κινδύνους</label>';
-            echo '<br><input id="start-update" type="button" value="Αυτόματη ενημέρωση στην τελευταία έκδοση" disabled>';
-            echo '<div id="update-results"></div><hr>';
-            echo $this->changelog;
+            echo '<br><input type="checkbox" name="accept-danger" id="accept-danger"> <label for="accept-danger" style="min-width: 160px">Αποδέχομαι τους κινδύνους</label>';
+            echo '<br><input id="start-update" class="update-button" type="button" value="Αυτόματη ενημέρωση στην τελευταία έκδοση" disabled>';
+            echo '<div id="update-results"></div>';
+            echo '</div>'; // End .box
+            echo '<div class="box">' . $this->changelog . '</div>';
         } else {
             echo '<h3>Έχετε την τελευταία έκδοση της εφαρμογής.</h3>';
         }
@@ -238,26 +241,27 @@ class App
         }
     }
 
+    /**
+     * Deletes the temporary files (downloaded and extreacted)
+     * Also logs the result of the update process
+     */
     public function cleanup_and_log()
     {
-        // Delete contents of the updates folder
-        // Maybe keep the last version though? NO! delete all
         empty_folder($this->folders['releases']);
         empty_folder($this->folders['downloads']);
 
         // Now let's log the update process
         $latest = $this->releases[0];
         if ($latest['tag'] === self::get_version()) {
-            $message = date('d/m/Y H:i:s', time()) . ' - Η εφαρμογή αναβαθμίστηκε στην έκδοση ' . $latest['tag'] . ' (από την ' . fSession::get('prev_version') . ')';
-            // dump(fSession::get('prev_version'));
-            savelog($message);
+            $message = 'Η εφαρμογή αναβαθμίστηκε στην έκδοση ' . $latest['tag'] . ' (από την ' . fSession::get('prev_version') . ')';
+            save_to_log($message);
             // Along with the admin log also log to different file the update actions
-            savelog($message, 'update_log.txt');
+            save_to_log($message, 'update_log.txt');
         } else {
-            $message = date('d/m/Y H:i:s', time()) . ' - Έγινε προσπάθεια αναβάθμισης αλλά οι εκδόσεις δεν ταιριάζουν (target: ' . $latest['tag'] . ', current: ' . self::get_version() . ')';
-            savelog($message);
+            $message = 'Έγινε προσπάθεια αναβάθμισης αλλά οι εκδόσεις δεν ταιριάζουν (target: ' . $latest['tag'] . ', current: ' . self::get_version() . ')';
+            save_to_log($message);
             // Along with the admin log also log to different file the update actions
-            savelog($message, 'update_log.txt');
+            save_to_log($message, 'update_log.txt');
         }
     }
 
@@ -270,9 +274,16 @@ class App
 
         if (file_exists($logfile)) {
             $log = array_reverse(file($logfile));
+            $last_action = array_shift($log);
+            echo $last_action . '<br>';
 
-            foreach ($log as $line) {
-                echo $line . '<br />';
+            if (count($log) > 0) {
+                echo '<a href="" id="show-more-log">Εμφάνιση περισσότερων</a>';
+                echo '<div id="all-update-log" style="display: none">';
+                foreach ($log as $i => $line) {
+                    echo $line . '<br />';
+                }
+                echo '</div>';
             }
         } else {
             echo 'Δεν έχουν πραγματοποιηθεί ακόμα ενημερώσεις';
