@@ -153,14 +153,14 @@ if (isset($_POST['proccess']) || isset($_GET['afm'])) {
 } else {
 
     echo '
-		<div class="information box" style="margin-bottom: 30px;">			
+		<div class="information box">			
 			' . $txt['header'] . '
 		</div>';
     //<b>Απρίλιος 2011 - Αναδρομικά</b> και ο Μάρτιος 2011 (τακτική και αναδρομικά) για όσους μεταπληρώνονται (ΙΔΑΧ και αναπληρωτές)
 
     print_form();
 
-    if (!empty($txt['footer'])) echo '<div style="margin-top: 20px;">' . $txt['footer'] . '</div>';
+    if (!empty($txt['footer'])) echo '<div class="box">' . $txt['footer'] . '</div>';
 
     // dump($txt);
 }

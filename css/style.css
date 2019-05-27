@@ -396,7 +396,8 @@ ul.pws_tabs_controll {
 }
 
 .box {
-	background: #fff;
+	/* background: #fff; */
+	background: #e2e2e2;
 	padding: 15px;
 	margin: 20px 0;
 }

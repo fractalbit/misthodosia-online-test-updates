@@ -73,14 +73,15 @@ class App
         if ($force_check) {
             $this->get_releases();
         } else {
-            $cached_releases = fSession::get('releases');
-            is_array($cached_releases) ? $this->releases = $cached_releases : $this->get_releases();
-
-            $cached_changelog = fSession::get('changelog');
-            !empty($cached_changelog) ? $this->changelog = $cached_changelog : $this->get_releases();
-
             $last_checked = fSession::get('last_checked');
-            !empty($last_checked) ? $this->last_checked = $last_checked : $this->get_releases();
+
+            if (!empty($last_checked)) {
+                $this->releases = fSession::get('releases');
+                $this->changelog = fSession::get('changelog');
+                $this->last_checked = $last_checked;
+            } else {
+                $this->get_releases();
+            }
         }
     }
 
