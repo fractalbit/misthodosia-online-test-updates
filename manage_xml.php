@@ -126,7 +126,7 @@ if (admin_configured()) {
         // dump(count($analyzed));
 
         if ($red_flag || count($xml_files) != count($analyzed)) {
-            echo '<div class="info_box red">Ο πίνακας αναλυθέντων αρχείων δε συμφωνεί με τα αρχεία που υπάρχουν στο φάκελο XMLDATA. Θα πρέπει να τρέξετε την... <br /><br /><a class="button" href="scanXMLdata.php">Ανάλυση αρχείων</a></div>';
+            echo '<div class="info_box red">Ο πίνακας αναλυθέντων αρχείων δε συμφωνεί με τα αρχεία που υπάρχουν στο φάκελο XMLDATA. Θα πρέπει να τρέξετε την... <br /><br /><a class="button" href="scanXMLdata.php" target="_blank">Ανάλυση αρχείων</a></div>';
         } else {
             echo '<div class="info_box green">Όλα τα αρχεία έχουν αναλυθεί</div>';
         }
@@ -142,7 +142,7 @@ if (admin_configured()) {
             $last_scan_info = '';
         }
 
-        echo '<div class="info_box"><a class="button" href="scanXMLdata.php">Ανάλυση αρχείων</a>' . $last_scan_info . '</div>';
+        echo '<div class="info_box"><a class="button" href="scanXMLdata.php" target="_blank">Ανάλυση αρχείων</a>' . $last_scan_info . '</div>';
     } else {
         echo '<div class="error">' . $admin->message . '</div>';
         echo $admin->show_login_form();

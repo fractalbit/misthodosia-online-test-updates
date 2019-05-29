@@ -128,7 +128,7 @@ div.error {
 	color: red;
 }
 
-#userlist-container input {
+#userlist-container input, #efpp_form_container input {
 	width: 250px;
 	height: 26px;
 	line-height: 26px;
@@ -136,7 +136,7 @@ div.error {
 	font-size: 18px;
 }
 
-#userlist-container label {
+#userlist-container label, #efpp_form_container label {
 	width: 260px;
 	text-align: center;
 	font-weight: bold;
