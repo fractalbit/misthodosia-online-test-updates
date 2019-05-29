@@ -165,6 +165,10 @@ class App
         echo '</div>'; // End .box
         if (!empty($this->changelog))
             echo '<div class="box">' . $this->changelog . '</div>';
+
+        echo '<div class="box">Για τυχόν προβλήματα, παρατηρήσεις, προτάσεις για βελτιώσεις κ.λ.π. μπορείτε να επικοινωνείτε μαζί μου
+         στο <a href="mailto:fractalbit@gmail.com">fractalbit@gmail.com</a> 
+        ή στο τηλέφωνο εργασίας στη ΔΔΕ Αργολίδας: 27520 27216. Ευχαριστώ για τη συνεργασία, Βελέντζας Αλέξανδρος.</div>';
     }
 
     /**
@@ -251,6 +255,10 @@ class App
     {
         empty_folder($this->folders['releases']);
         empty_folder($this->folders['downloads']);
+
+        // ToDo
+        // Change permissions of the xml folder
+        // Maybe it's not needed since deny access with the .htaccess
 
         // Now let's log the update process
         $latest = $this->releases[0];

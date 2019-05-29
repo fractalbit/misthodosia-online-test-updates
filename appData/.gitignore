@@ -2,5 +2,6 @@
 *
 # Except this file
 !.gitignore
+!.htaccess
 # And this subfolder
 !session_data
