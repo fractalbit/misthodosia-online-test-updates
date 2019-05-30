@@ -155,10 +155,10 @@ function print_header()
 
         <?php if (admin_configured() && $admin->check_logged_in()) { ?>
             <script src="js/jquery.fastLiveFilter.js"></script>
+            <script src="js/admin.js?ver=<?php echo App::get_version(); ?>"></script>
         <?php
     }
     ?>
-
         <script src="js/script.js?ver=<?php echo App::get_version(); ?>"></script>
     </head>
 

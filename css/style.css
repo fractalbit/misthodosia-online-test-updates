@@ -287,8 +287,8 @@ ul#admin-menu li {
 ul#admin-menu li a {
 	display: inline-block;
 	text-decoration: none;
-	padding: 4px 8px;
-	margin: 0 4px;
+	padding: 5px 2px;
+	margin: 4px 10px;
 	margin-top: 5px;
 	border-bottom: 5px solid #e2e2e2;
 }
