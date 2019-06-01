@@ -56,6 +56,7 @@ $(function () {
 
     $('#start-update').click(function () {
         $(this).prop('disabled', true);
+        $('#accept-danger').prop('disabled', true);
     });
 
     var ajaxExecute = function (url) {

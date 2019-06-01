@@ -51,10 +51,13 @@ a.button, a:visited.button {
 
 	font-weight:bold;
 	font-size: 13px;
+
+	transition: background-color 200ms;
 }
 a.button:hover { 
-	background: #09f; 
+	background-color: #09f; 
 	color: #fff; 
+	transition: background-color 300ms;
 }
 
 
@@ -413,10 +416,19 @@ ul.pws_tabs_controll {
 	background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
 	background-image: linear-gradient(top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));	
 	color: #fff;
+	transition: opacity 200ms linear;
+	/* transition: color 300ms linear; */
+}
+
+.update-button:hover{
+	background-color: #09f;
 }
 
 .update-button:disabled {
-	border: 1px solid #999;
+	/* border: 1px solid #999;
 	background: #ccc;
-	color: #666;
+	color: #666; */
+	cursor: default; 
+	opacity: .4;
+	background-color: #336699;
 }
