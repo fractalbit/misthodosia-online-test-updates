@@ -154,8 +154,9 @@ class App
         echo '<div style="font-style: italic;">Έγινε έλεγχος για ενημερώσεις στις: ' . $this->last_checked . '</div>';
         if (!empty($this->changelog)) {
             echo '<h3>Υπάρχουν διαθέσιμες ενημερώσεις...</h3>';
-            echo 'Η αυτόματη ενημέρωση είναι σε πειραματικό στάδιο και δεν έχει δοκιμαστεί επαρκώς. <strong>Παρακαλούμε προχωρήστε με δική σας ευθύνη.</strong>
-            Σε περίπτωση που αποτύχει θα πρέπει να αναβαθμίσετε την εφαρμογή με βάση τις οδηγίες της <a href="https://github.com/fractalbit/misthodosia-online/blob/master/readme.md">τεκμηρίωσης</a>.';
+            echo 'Η αυτόματη ενημέρωση είναι σε πειραματικό στάδιο και δεν έχει δοκιμαστεί επαρκώς.
+            Σε περίπτωση που αποτύχει θα πρέπει να αναβαθμίσετε ή να εγκαταστήσετε εκ νέου την εφαρμογή με βάση τις οδηγίες της <a href="https://github.com/fractalbit/misthodosia-online/blob/master/readme.md">τεκμηρίωσης</a>.
+            <br><br><strong>Παρακαλούμε προχωρήστε με δική σας ευθύνη.</strong>';
             echo '<br><input type="checkbox" name="accept-danger" id="accept-danger"> <label for="accept-danger" style="min-width: 160px">Αποδέχομαι τους κινδύνους</label>';
             echo '<br><input id="start-update" class="update-button" type="button" value="Αυτόματη ενημέρωση στην τελευταία έκδοση" disabled>';
             echo '<div id="update-results"></div>';

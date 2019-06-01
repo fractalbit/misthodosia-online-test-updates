@@ -72,7 +72,7 @@ $(function () {
 
 
     function redirect(time, location) {
-        var finished = `<br><br><strong>Η διαδικασία της αναβάθμισης ολοκληρώθηκε.</strong> Θα γίνει επαναφόρτωση σε <span id="countdown">${time}</span> δευτερόλεπτα`;
+        var finished = `<br><br><strong>Η διαδικασία της αναβάθμισης ολοκληρώθηκε.</strong> Θα γίνει επαναφόρτωση σε <span id="countdown">${time}</span> δευτερόλεπτα ή <a href="update.php">επαναφόρτωση άμεσα.</a>`;
         $('#update-results').append(finished);
         var interval = setInterval(function () {
             var timer = $('#countdown').html();
@@ -87,18 +87,21 @@ $(function () {
 
 
     $('#start-update').click(function () {
+        // Maybe i should refactor the code for the php scripts
+        // to return data as json and treat them accordingly. Or maybe not :)
 
         var alreadyFailed = false;
 
         $('#update-results').append('Παρακαλούμε περιμένετε όσο κατεβάζουμε την τελευταία έκδοση<span id="downloading" class="ajax-loader" style="display: inline-block;"><img src="img/loader-new.gif" style="position: relative; top: 6px; margin-right: 20px;" /></span>');
 
-        var start_time = new Date().getTime();
+        var startTime = new Date().getTime();
 
+        // Download the latest realease zip
         var getLatest = ajaxExecute('ajax-get-latest.php');
 
         getLatest.done(function (data) {
-            var request_time = new Date().getTime() - start_time; // Second call execution time
-            var info = '. <strong>' + data + '</strong> σε ' + (request_time / 1000).toFixed(1) + 's';
+            var timeDiff = new Date().getTime() - startTime; // Second call execution time
+            var info = `. <strong>${data}</strong> σε ${(timeDiff / 1000).toFixed(1)}s`;
             $('#downloading').hide();
             $('#update-results').append(info);
         });
@@ -110,15 +113,16 @@ $(function () {
             alreadyFailed = true;
         });
 
+        // Extract the downloaded zip (We communicate data between ajax calls through php session variables :)
         var extract = getLatest.then(function (data) {
             $('#update-results').append('<br><br>Παρακαλούμε περιμένετε όσο αποσυμπιέζονται τα απαραίτητα αρχεία<span id="extracting" class="ajax-loader" style="display: inline-block;"><img src="img/loader-new.gif" style="position: relative; top: 6px; margin-right: 20px;" /></span>');
-            start_time = new Date().getTime(); // Reset the timer just befor the second execution
+            startTime = new Date().getTime(); // Reset the timer just befor the second execution
             return ajaxExecute('ajax-extract-release.php');
         });
 
         extract.done(function (data) {
-            var request_time = new Date().getTime() - start_time; // Second call execution time
-            var info = '. <strong>' + data + '</strong> σε ' + (request_time / 1000).toFixed(1) + 's';
+            var timeDiff = new Date().getTime() - startTime; // Second call execution time
+            var info = `. <strong>${data}</strong> σε ${(timeDiff / 1000).toFixed(1)}s`;
             $('#extracting').hide();
             $('#update-results').append(info);
         });
@@ -132,15 +136,16 @@ $(function () {
             alreadyFailed = true;
         });
 
+        // Copy the the extracted files to the main directory overwriting any files
         var copy = extract.then(function (data) {
             $('#update-results').append('<br><br>Παρακαλούμε περιμένετε όσο αντιγράφονται τα απαραίτητα αρχεία<span id="copying" class="ajax-loader" style="display: inline-block;"><img src="img/loader-new.gif" style="position: relative; top: 6px; margin-right: 20px;" /></span>');
-            start_time = new Date().getTime(); // Reset the timer just befor the second execution
+            startTime = new Date().getTime(); // Reset the timer just befor the second execution
             return ajaxExecute('ajax-copy-release.php');
         });
 
         copy.done(function (data) {
-            var request_time = new Date().getTime() - start_time; // Second call execution time
-            var info = '. <strong>' + data + '</strong> σε ' + (request_time / 1000).toFixed(1) + 's';
+            var timeDiff = new Date().getTime() - startTime; // Second call execution time
+            var info = `. <strong>${data}</strong> σε ${(timeDiff / 1000).toFixed(1)}s`;
             $('#copying').hide();
             $('#update-results').append(info);
         });
@@ -154,19 +159,20 @@ $(function () {
             alreadyFailed = true;
         });
 
+        // And finally delete the downloaded and extracted files
         var cleanup = copy.then(function (data) {
             $('#update-results').append('<br><br>Εκκαθάριση προσωρινών αρχείων<span id="cleanup" class="ajax-loader" style="display: inline-block;"><img src="img/loader-new.gif" style="position: relative; top: 6px; margin-right: 20px;" /></span>');
-            start_time = new Date().getTime(); // Reset the timer just befor the second execution
+            startTime = new Date().getTime(); // Reset the timer just befor the second execution
             return ajaxExecute('ajax-update-cleanup.php');
         });
 
         cleanup.done(function (data) {
-            var request_time = new Date().getTime() - start_time; // Second call execution time
-            var info = '. <strong>' + data + '</strong> σε ' + (request_time / 1000).toFixed(1) + 's';
+            var timeDiff = new Date().getTime() - startTime; // Second call execution time
+            var info = `. <strong>${data}</strong> σε ${(timeDiff / 1000).toFixed(1)}s`;
             $('#cleanup').hide();
             $('#update-results').append(info);
 
-            redirect(10, 'update.php');
+            redirect(15, 'update.php');
         });
 
         cleanup.fail(function (jqXHR, textStatus, errorThrown) {

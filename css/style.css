@@ -403,6 +403,20 @@ ul.pws_tabs_controll {
 }
 
 .update-button {
-	padding: 10px;
-	/* border-radius: 5px; */
+	border: none;
+	padding: 10px 16px;
+	border-radius: 6px;
+	border: 1px solid #336699;
+	background: #336699;
+	background-image: -moz-linear-gradient(top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+	background-image: -o-linear-gradient(top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+	background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+	background-image: linear-gradient(top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));	
+	color: #fff;
+}
+
+.update-button:disabled {
+	border: 1px solid #999;
+	background: #ccc;
+	color: #666;
 }
