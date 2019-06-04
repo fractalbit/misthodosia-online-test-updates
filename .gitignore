@@ -6,6 +6,8 @@ Design
 example-xml-data
 documentation.php
 config.inc.php
+config.new.php
+config.inc - for del.php
 makePDF.php
 misthodosia-online.sublime-project
 misthodosia-online.sublime-workspace

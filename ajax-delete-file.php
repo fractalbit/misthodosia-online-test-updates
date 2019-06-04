@@ -25,19 +25,18 @@
 
 include_once('./init.inc.php');
 
-if(admin_configured()){
+if (admin_configured()) {
 
-    if($admin->check_logged_in()){        
+    if ($admin->check_logged_in()) {
         $file = urldecode($_GET['file']);
         //echo $file;
         unlink($file);
 
-        $message = date('d/m/Y H:i:s', time()) . ' - Ο διαχειριστής διέγραψε το αρχείο ' . mb_convert_encoding($file, 'UTF-8', 'ISO-8859-7');
-        savelog($message);
-    }else{
+        $message = 'Ο διαχειριστής διέγραψε το αρχείο ' . mb_convert_encoding($file, 'UTF-8', 'ISO-8859-7');
+        save_to_log($message);
+    } else {
         echo $admin->message;
     }
-
-}else{
+} else {
     echo $admin->message;
 }

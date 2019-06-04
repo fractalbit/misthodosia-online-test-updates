@@ -51,10 +51,13 @@ a.button, a:visited.button {
 
 	font-weight:bold;
 	font-size: 13px;
+
+	transition: background-color 200ms;
 }
 a.button:hover { 
-	background: #09f; 
+	background-color: #09f; 
 	color: #fff; 
+	transition: background-color 300ms;
 }
 
 
@@ -128,7 +131,7 @@ div.error {
 	color: red;
 }
 
-#userlist-container input {
+#userlist-container input, #efpp_form_container input {
 	width: 250px;
 	height: 26px;
 	line-height: 26px;
@@ -136,7 +139,7 @@ div.error {
 	font-size: 18px;
 }
 
-#userlist-container label {
+#userlist-container label, #efpp_form_container label {
 	width: 260px;
 	text-align: center;
 	font-weight: bold;
@@ -264,12 +267,12 @@ div.error {
 
 .left{
 	float: left;
-	width: 600px;
+	width: 620px;
 }
 
 .right{
 	float: right;
-	width: 300px;
+	width: 290px;
 	text-align: right;
 }
 
@@ -287,8 +290,8 @@ ul#admin-menu li {
 ul#admin-menu li a {
 	display: inline-block;
 	text-decoration: none;
-	padding: 4px 8px;
-	margin: 0 5px;
+	padding: 5px 2px;
+	margin: 4px 10px;
 	margin-top: 5px;
 	border-bottom: 5px solid #e2e2e2;
 }
@@ -384,4 +387,48 @@ ul.pws_tabs_controll {
 
 .special {
 	background: #e5ecf9 !important;
+}
+
+#update-results {
+	margin-top: 20px;
+	padding: 10px;
+}
+
+.ajax-loader {
+	margin-left: 12px;
+}
+
+.box {
+	/* background: #fff; */
+	background: #e2e2e2;
+	padding: 15px;
+	margin: 20px 0;
+}
+
+.update-button {
+	border: none;
+	padding: 10px 16px;
+	border-radius: 6px;
+	border: 1px solid #336699;
+	background: #336699;
+	background-image: -moz-linear-gradient(top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+	background-image: -o-linear-gradient(top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+	background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+	background-image: linear-gradient(top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));	
+	color: #fff;
+	transition: opacity 200ms linear;
+	/* transition: color 300ms linear; */
+}
+
+.update-button:hover{
+	background-color: #09f;
+}
+
+.update-button:disabled {
+	/* border: 1px solid #999;
+	background: #ccc;
+	color: #666; */
+	cursor: default; 
+	opacity: .4;
+	background-color: #336699;
 }
