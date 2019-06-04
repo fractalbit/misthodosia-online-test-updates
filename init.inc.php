@@ -21,10 +21,14 @@
 // Το αρχείο αυτό γίνεται include στα αρχεία της εφαρμογής και φορτώνει όλα τα απαραίτητα αρχεία για τη λειτουργία της
 /* *********** ΤΕΛΟΣ ΓΕΝΙΚΗΣ ΠΕΡΙΓΡΑΦΗΣ *********** */
 
-if (is_dir('.git')) {
+if (is_dir('.git') || isset($_GET['debug'])) {
     error_reporting(E_ALL);
     ini_set('display_errors', '1');
 }
+
+date_default_timezone_set('Europe/Athens');
+// Required for PHP DateTime object to work correctly
+// This can also be passed directly to the constructor but better here to be universal for the app
 
 if (!file_exists('config.inc.php')) die('To arxeio config.inc.php de vrethike. Parakaloume diavaste <a href="https://github.com/fractalbit/misthodosia-online/blob/master/readme.md">tin tekmiriosi</a>');
 
