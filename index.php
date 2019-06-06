@@ -101,8 +101,7 @@ if (isset($_POST['proccess']) || isset($_GET['afm'])) {
                         //$link_file = ORG_URL . '/' . current_dir() . '/' . USER_DIR . '/' . $afm . '_' . $salt . '.pdf';
                         $link_file = trailingslashit(ORG_URL) . trailingslashit(current_dir()) . trailingslashit(USER_DIR) .  $afm . '_' . $salt . '.pdf';
                         print_pdf_select_menu($select_values, $pdf_years);
-                        echo '<a href="" id="gen-pdf" class="button">Δημιουργία PDF ></a><div id="pdf-msg" style="display: inline-block; margin: 0 20px;"><span id="generating" style="
-						display: none;"><img src="img/loader-new.gif" style="position: relative; top: 6px; margin-right: 20px;" /></span><a id="pdf-complete" href="' . $link_file . '" target="_blank" class="button download" style="display: none">Εμφάνιση/λήψη του pdf</a></div>';
+                        echo '<a href="" id="gen-pdf" class="button">Δημιουργία PDF ></a><div id="generating" class="loader-container" style="margin-left: 20px; display: none;"><div class="loader rect"><div></div><div></div><div></div><div></div><div></div><div></div></div></div><a id="pdf-complete" href="' . $link_file . '" target="_blank" class="button download" style="display: none; margin-left: 20px;">Εμφάνιση/λήψη του pdf</a>';
                         fSession::set('pages', $pages);
                         fSession::set('pdf_years', $pdf_years);
                         //echo '<textarea id="pdf-data" style="display:none;">'.serialize($pages).'</textarea>';

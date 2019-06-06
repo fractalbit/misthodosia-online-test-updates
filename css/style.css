@@ -405,7 +405,7 @@ ul.pws_tabs_controll {
 	margin: 20px 0;
 }
 
-.update-button {
+.update-button, input[type=button], input[type=submit], input[type=reset] {
 	border: none;
 	padding: 10px 16px;
 	border-radius: 6px;
@@ -420,7 +420,7 @@ ul.pws_tabs_controll {
 	/* transition: color 300ms linear; */
 }
 
-.update-button:hover{
+.update-button:hover, input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover {
 	background-color: #09f;
 }
 
@@ -432,3 +432,117 @@ ul.pws_tabs_controll {
 	opacity: .4;
 	background-color: #336699;
 }
+
+span#countdown {
+	font-weight: bold;
+}
+
+  /* Message boxes */
+
+.box {
+	padding: 10px;
+	border-radius: 5px;
+	background-color: #e2e2e2;
+	color: #494949;
+	border: 1px solid #c9c9c9;
+  }
+  
+  div.info {
+	background-color: #AFDBF3;
+	color: #0f4461;
+	border: 1px solid #83c7ec;
+  }
+  
+  div.success {
+	background-color: #D5F3AF;
+	color: #3d610f;
+	border: 1px solid #b2e96c;
+  }
+  
+  div.error {
+	background-color: #F3B3AF;
+	color: #61130f;
+	border: 1px solid #ec8983;
+  }
+  
+  div.warning {
+	background-color: #ffea95;
+	color: #624e00;
+	border: 1px solid #ffd52f;
+  }
+
+
+
+
+  /* CSS LOADERS */
+  
+  .loader-container {
+	display: inline-block; 
+	margin-top: -2px; 
+	margin-left: 8px; 
+	vertical-align: middle;
+  }
+
+  .loader{
+	display: flex;
+  }
+  
+  .rounded > div {
+	border-radius: 50%;
+  }
+  
+  .rect > div {
+	border-radius: 3px;
+  }
+  
+  .loader > div {
+	width: 12px;
+	height: 12px;
+	background-color: #336699;
+  /*   border: 1px solid #fff; */
+	animation: scale 2.2s infinite;
+  }
+  
+  .loader > div:not(:last-child) {
+	margin-right: 4px;
+  }
+  
+  .loader > div:nth-child(2){
+	animation-delay: .2s;
+  }
+  
+  .loader > div:nth-child(3){
+	animation-delay: .4s;
+  }
+  
+  .loader > div:nth-child(4){
+	animation-delay: .6s;
+  }
+  
+  .loader > div:nth-child(5){
+	animation-delay: .8s;
+  }
+  
+  .loader > div:nth-child(6){
+	animation-delay: 1s;
+  }
+  
+  @keyframes scale {
+	0% {
+	  transform: scale(0);
+	  opacity: 0;
+  /*     transform: rotate(0); */
+	}
+	
+	45%, 55% {
+	  transform: scale(1);
+	  opacity: 1;
+  /*     transform: rotate(180deg); */
+	}
+	
+	100% {
+	  transform: scale(0);
+	  opacity: 0;
+  /*     transform: rotate(360deg); */
+	}
+  }

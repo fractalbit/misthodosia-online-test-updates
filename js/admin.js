@@ -73,7 +73,7 @@ $(function () {
 
 
     function redirect(time, location) {
-        var finished = `<br><br><strong>Η διαδικασία της αναβάθμισης ολοκληρώθηκε.</strong> Θα γίνει επαναφόρτωση σε <span id="countdown">${time}</span> δευτερόλεπτα ή <a href="update.php">επαναφόρτωση άμεσα.</a>`;
+        var finished = `<br><br><div class="box success"><strong>Η διαδικασία της αναβάθμισης ολοκληρώθηκε.</strong> Θα γίνει επαναφόρτωση σε <span id="countdown">${time}</span> δευτερόλεπτα ή <a href="update.php">επαναφόρτωση άμεσα.</a></div>`;
         $('#update-results').append(finished);
         var interval = setInterval(function () {
             var timer = $('#countdown').html();
@@ -86,6 +86,12 @@ $(function () {
         }, 1000);
     }
 
+    function loader(loaderId) {
+        // return '<span id="' + loaderId + '" class="ajax-loader" style="display: inline-block;"><img src="img/loader-new.gif" style="position: relative; top: 6px; margin-right: 20px;" /></span>';
+        return '<div id="' + loaderId + '" class="loader-container"><div class="loader rect"><div></div><div></div><div></div><div></div><div></div><div></div></div></div>';
+    }
+
+    // $('#update-results').append('This is a test' + loader('test'));
 
     $('#start-update').click(function () {
         // Maybe i should refactor the code for the php scripts
@@ -93,7 +99,7 @@ $(function () {
 
         var alreadyFailed = false;
 
-        $('#update-results').append('Παρακαλούμε περιμένετε όσο κατεβάζουμε την τελευταία έκδοση<span id="downloading" class="ajax-loader" style="display: inline-block;"><img src="img/loader-new.gif" style="position: relative; top: 6px; margin-right: 20px;" /></span>');
+        $('#update-results').append('Παρακαλούμε περιμένετε όσο κατεβάζουμε την τελευταία έκδοση' + loader('downloading'));
 
         var startTime = new Date().getTime();
 
@@ -102,7 +108,7 @@ $(function () {
 
         getLatest.done(function (data) {
             var timeDiff = new Date().getTime() - startTime; // Second call execution time
-            var info = `. <strong>${data}</strong> σε ${(timeDiff / 1000).toFixed(1)}s`;
+            var info = `. <strong>${data}</strong > σε ${(timeDiff / 1000).toFixed(1)} s`;
             $('#downloading').hide();
             $('#update-results').append(info);
         });
@@ -116,14 +122,14 @@ $(function () {
 
         // Extract the downloaded zip (We communicate data between ajax calls through php session variables :)
         var extract = getLatest.then(function (data) {
-            $('#update-results').append('<br><br>Παρακαλούμε περιμένετε όσο αποσυμπιέζονται τα απαραίτητα αρχεία<span id="extracting" class="ajax-loader" style="display: inline-block;"><img src="img/loader-new.gif" style="position: relative; top: 6px; margin-right: 20px;" /></span>');
+            $('#update-results').append('<br><br>Παρακαλούμε περιμένετε όσο αποσυμπιέζονται τα απαραίτητα αρχεία' + loader('extracting'));
             startTime = new Date().getTime(); // Reset the timer just befor the second execution
             return ajaxExecute('ajax-extract-release.php');
         });
 
         extract.done(function (data) {
             var timeDiff = new Date().getTime() - startTime; // Second call execution time
-            var info = `. <strong>${data}</strong> σε ${(timeDiff / 1000).toFixed(1)}s`;
+            var info = `. <strong>${data}</strong > σε ${(timeDiff / 1000).toFixed(1)} s`;
             $('#extracting').hide();
             $('#update-results').append(info);
         });
@@ -139,14 +145,14 @@ $(function () {
 
         // Copy the the extracted files to the main directory overwriting any files
         var copy = extract.then(function (data) {
-            $('#update-results').append('<br><br>Παρακαλούμε περιμένετε όσο αντιγράφονται τα απαραίτητα αρχεία<span id="copying" class="ajax-loader" style="display: inline-block;"><img src="img/loader-new.gif" style="position: relative; top: 6px; margin-right: 20px;" /></span>');
+            $('#update-results').append('<br><br>Παρακαλούμε περιμένετε όσο αντιγράφονται τα απαραίτητα αρχεία' + loader('copying'));
             startTime = new Date().getTime(); // Reset the timer just befor the second execution
             return ajaxExecute('ajax-copy-release.php');
         });
 
         copy.done(function (data) {
             var timeDiff = new Date().getTime() - startTime; // Second call execution time
-            var info = `. <strong>${data}</strong> σε ${(timeDiff / 1000).toFixed(1)}s`;
+            var info = `. <strong>${data}</strong > σε ${(timeDiff / 1000).toFixed(1)} s`;
             $('#copying').hide();
             $('#update-results').append(info);
         });
@@ -162,14 +168,14 @@ $(function () {
 
         // And finally delete the downloaded and extracted files
         var cleanup = copy.then(function (data) {
-            $('#update-results').append('<br><br>Εκκαθάριση προσωρινών αρχείων<span id="cleanup" class="ajax-loader" style="display: inline-block;"><img src="img/loader-new.gif" style="position: relative; top: 6px; margin-right: 20px;" /></span>');
+            $('#update-results').append('<br><br>Εκκαθάριση προσωρινών αρχείων' + loader('cleanup'));
             startTime = new Date().getTime(); // Reset the timer just befor the second execution
             return ajaxExecute('ajax-update-cleanup.php');
         });
 
         cleanup.done(function (data) {
             var timeDiff = new Date().getTime() - startTime; // Second call execution time
-            var info = `. <strong>${data}</strong> σε ${(timeDiff / 1000).toFixed(1)}s`;
+            var info = `. <strong>${data}</strong > σε ${(timeDiff / 1000).toFixed(1)} s`;
             $('#cleanup').hide();
             $('#update-results').append(info);
 

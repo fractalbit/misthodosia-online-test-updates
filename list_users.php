@@ -29,35 +29,33 @@ include_once('./init.inc.php');
 print_header();
 
 echo '<div id="userlist-container">';
-if(admin_configured()){
+if (admin_configured()) {
 
-    if($admin->check_logged_in()){
+    if ($admin->check_logged_in()) {
         //echo $admin->message;
 
         $file = USER_DIR . '/all.php';
-        if(file_exists($file)){  
+        if (file_exists($file)) {
 
             echo '<label for="search_filter">Γρήγορη αναζήτηση</label><br  /><input type="text" id="search_filter" />';
-            echo '<ul id="user-list">';             
+            echo '<ul id="user-list">';
             $all = load_file($file);
             foreach ($all as $user) {
                 $test = trim($user['name']);
-                if(!empty($test)) {
-                    $link = '<li><a href="index.php?afm='.$user['afm'].'" target="_blank">'.$user['name']. '</a> (' . $user['afm'] . ')</li>';
+                if (!empty($test)) {
+                    $link = '<li><a href="index.php?afm=' . $user['afm'] . '" target="_blank">' . $user['name'] . '</a> (' . $user['afm'] . ')</li>';
                     echo $link;
                 }
             }
             echo '</ul>';
-        }else{
+        } else {
             echo 'Δε βρέθηκαν μισθοδοτούμενοι! Παρακαλούμε επισκεφθείτε την ενότητητα <a href="manage_xml.php">Διαχείριση XML</a>';
         }
-
-    }else{
-        echo '<div class="error">'.$admin->message.'</div>';
+    } else {
+        echo '<div class="error box">' . $admin->message . '</div>';
         echo $admin->show_login_form();
     }
-
-}else{
+} else {
     echo $admin->message;
 }
 

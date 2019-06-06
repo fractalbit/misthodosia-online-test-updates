@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*  
 	"Μισθοδοσία online" - Εφαρμογή άντλησης και παρουσίασης οικoνομικών στοιχείων από αρχεία XML
@@ -27,20 +27,18 @@ include_once('./init.inc.php');
 
 print_header();
 
-if(admin_configured()){
+if (admin_configured()) {
 
-    if($admin->check_logged_in()){
+    if ($admin->check_logged_in()) {
 
         unlink(APP_DIR . '/texts.json') or die('Πρόβλημα επαναφοράς των κειμένων');
 
         echo '<h3>Τα κείμενα της εφαρμογής επανήλθαν</h3>';
-
-    }else{
-        echo '<div class="error">'.$admin->message.'</div>';
+    } else {
+        echo '<div class="error box">' . $admin->message . '</div>';
         echo $admin->show_login_form();
     }
-
-}else{
+} else {
     echo $admin->message;
 }
 

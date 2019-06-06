@@ -181,7 +181,7 @@ class App
         $current_script = end($scriptArgs);
         // dump($current_script);
         if (!empty($this->changelog) && $current_script !== 'update.php') {
-            echo '<div style="margin: 10px;">Υπάρχει διαθέσιμη μία νέα έκδοση - <a href="update.php">Ενημέρωση της εφαρμογής</a></div>';
+            echo '<div class="info box" style="margin: 10px 0;">Υπάρχει διαθέσιμη μία νέα έκδοση - <a href="update.php">Ενημέρωση της εφαρμογής</a></div>';
         }
     }
 

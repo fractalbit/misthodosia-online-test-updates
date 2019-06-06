@@ -14,7 +14,7 @@ if (admin_configured()) {
         $app->print_update_log();
         $app->print_newer();
     } else {
-        echo '<div class="error">' . $admin->message . '</div>';
+        echo '<div class="error box">' . $admin->message . '</div>';
         echo $admin->show_login_form();
     }
 } else {

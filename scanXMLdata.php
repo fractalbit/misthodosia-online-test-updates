@@ -68,7 +68,7 @@ if (admin_configured()) {
 			echo '<h3>Δεν βρέθηκε κανένα έγκυρο αρχείο XML. Παρακαλούμε διαβάστε την τεκμηρίωση: <a href="http://dide.arg.sch.gr/grmixan/misthodosia-online-app/">http://dide.arg.sch.gr/grmixan/misthodosia-online-app/</a></h3>';
 		} else {
 			echo '<br />Αναλύθηκαν <strong>' . $f . '</strong> αρχεία XML.';
-			if ($file_errors > 0) echo '<div class="error">Απέτυχε η φόρτωση <strong>' . $file_errors . '</strong> ' . (($file_errors > 1) ? 'αρχείων' : 'αρχείου') . ' XML.</div><br>';
+			if ($file_errors > 0) echo '<div class="error box">Απέτυχε η φόρτωση <strong>' . $file_errors . '</strong> ' . (($file_errors > 1) ? 'αρχείων' : 'αρχείου') . ' XML.</div><br>';
 		}
 
 
@@ -99,7 +99,7 @@ if (admin_configured()) {
 
 		unset($dataset);
 	} else {
-		echo '<div class="error">' . $admin->message . '</div>';
+		echo '<div class="error box">' . $admin->message . '</div>';
 		echo $admin->show_login_form();
 	}
 } else {

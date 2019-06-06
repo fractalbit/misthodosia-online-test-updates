@@ -383,14 +383,13 @@ function display_xml_error_message($file, $show_delete_link = true)
 {
     $show_delete_link ? $delete_link =  '<a href="file=' . urlencode($file) . '" class="delete confirm" rel="Είστε σίγουρος ότι θέλετε να διαγράψετε αυτό το αρχείο;">Διαγραφή</a>' : $delete_link = '';
     echo '
-        <div class="error"><hr>Η φόρτωση του αρχείου 
-            <span style="font-weight: bold">' . $file . '</span> απέτυχε.' . $delete_link . '<br><br>
-            <span style="color: #666; font-style: italic">Το παραπάνω αρχείο δεν έχει έγκυρη δομή xml. Παρακαλούμε προσπαθήστε να εξάγετε εκ νέου το αρχείο
+        <div class="box error">Η φόρτωση του αρχείου 
+            <span style="font-weight: bold">' . $file . '</span> απέτυχε. ' . $delete_link . '<br><br>
+            <span style="font-style: italic">Το παραπάνω αρχείο δεν έχει έγκυρη δομή xml. Παρακαλούμε προσπαθήστε να εξάγετε εκ νέου το αρχείο
             από το πρόγραμμα μισθοδοσίας σας και να το ανεβάσετε και πάλι εδώ. Διαφορετικά προσπαθήστε να διορθώσετε
             χειροκίνητα τα λάθη ανοίγοντας το .xml αρχείο με κάποιον επεξεργαστή κειμένου.</span>
             <br><br>
-            <a href="" class="button toggle_xml_errors">Εμφάνιση λαθών</a>
-            <hr>
+            <a href="" class="button toggle_xml_errors">Εμφάνιση λαθών</a>            
         </div>';
 }
 

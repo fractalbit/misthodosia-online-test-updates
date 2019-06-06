@@ -60,7 +60,7 @@ if (admin_configured()) {
 
         ?>
 
-        <form id="upload-form" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" enctype="multipart/form-data">
+        <form id="upload-form" class="box" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" enctype="multipart/form-data">
             <label for="file">Νέο αρχείο: </label>
             <input id="file" type="file" name="file" />
             <input type="submit" value="Ανέβασμα" />
@@ -144,7 +144,7 @@ if (admin_configured()) {
 
         echo '<div class="info_box"><a class="button" href="scanXMLdata.php" target="_blank">Ανάλυση αρχείων</a>' . $last_scan_info . '</div>';
     } else {
-        echo '<div class="error">' . $admin->message . '</div>';
+        echo '<div class="error box">' . $admin->message . '</div>';
         echo $admin->show_login_form();
     }
 } else {
