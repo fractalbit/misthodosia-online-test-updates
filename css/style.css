@@ -437,10 +437,21 @@ span#countdown {
 	font-weight: bold;
 }
 
+.box *:first-child {
+	margin-top: 0;
+}
+
+.box p:first-child {
+	margin-top: 0;
+}
+
+.box p:last-child {
+	margin-bottom: 0;
+}
   /* Message boxes */
 
 .box {
-	padding: 10px;
+	padding: 12px;
 	border-radius: 5px;
 	background-color: #e2e2e2;
 	color: #494949;

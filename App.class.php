@@ -31,8 +31,10 @@ class App
             $this->simulate = true;
             $this->app_dir  = $this->app_dir . $this->simulate_dir;
             $this->current_version = $this->simulate_ver;
-            $this->repo_url = 'https://api.github.com/repos/fractalbit/misthodosia-online-test-updates/'; // Move this outside of if to check for updates in the alternate repo
+            $this->repo_url = 'https://api.github.com/repos/fractalbit/misthodosia-online-test-updates/'; // Move this outside of if to check for updates in the alternate repo...
         }
+        // Or just set the flag test-updates in the url to check for updates in the test server
+        if (isset($_GET['test-updates'])) $this->repo_url = 'https://api.github.com/repos/fractalbit/misthodosia-online-test-updates/';
 
         $this->folders = array(
             'updates'   => $this->app_dir . 'updates/',
